@@ -22,10 +22,10 @@
 				<li class="nav-item"><a class="nav-link" href="#">
 						Appointments <i class="bi bi-file-earmark-text"></i>
 				</a></li>
-				<li class="nav-item"><a class="nav-link" href="#"> Medical
+				<li class="nav-item"><a class="nav-link" href="medicalrecord"> Medical
 						records <i class="bi bi-clipboard2-pulse"></i>
 				</a></li>
-				<li class="nav-item"><a class="nav-link" href="#">
+				<li class="nav-item"><a class="nav-link" href="transaction">
 						Reporting <i class="bi bi-cloud-arrow-down"></i>
 				</a></li>
 				<li class="nav-item"><a class="nav-link" href="editaccount">

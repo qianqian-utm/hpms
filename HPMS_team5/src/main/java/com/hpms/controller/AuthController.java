@@ -53,6 +53,16 @@ public class AuthController {
 		return new ModelAndView("dashboard");
 	}
 
+	@GetMapping("/transaction")
+	public ModelAndView transactionPage() {
+		return new ModelAndView("transaction_record");
+	}
+
+	@GetMapping("/manageSchedule")
+	public ModelAndView manageSchedule() {
+		return new ModelAndView("ManageSchedule");
+	}
+
 	@GetMapping("/userlisting")
 	public ModelAndView userListing(HttpServletRequest request) {
 		HttpSession session = request.getSession();

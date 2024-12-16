@@ -1,9 +1,0 @@
-com\hpms\controller\AuthController.class
-com\hpms\service\UserService.class
-com\hpms\servlets\LoginServlet.class
-com\hpms\model\TransactionRecord.class
-com\hpms\servlets\RegisterServlet.class
-com\hpms\model\User.class
-com\hpms\servlets\UserServlet.class
-com\hpms\model\MedicalRecord.class
-com\hpms\model\Appointment.class
