@@ -111,16 +111,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="transaction" items="${sessionScope.transactionList}">
-                        <tr>
-                            <td>${transaction.appointment.doctor.first_name} ${transaction.appointment.doctor.last_name}</td>
-                            <td>${transaction.appointment.patient.first_name} ${transaction.appointment.patient.last_name}</td>
-                            <td>${transaction.appointment.appointment_date}</td>
-                            <td>${transaction.appointment.start_time}</td>
-                            <td>${transaction.appointment.end_time}</td>
-                            <td>${transaction.amount}</td>
-                        </tr>
-                    </c:forEach>
+                      <tr>
+                          <td>John Doe</td>
+                          <td>Sarah Care</td>
+                          <td>9/12/2024</td>
+                          <td>11:00</td>
+                          <td>11:30</td>
+                          <td>40.00</td>
+                      </tr>
+                      <tr>
+                          <td>Claire Holmes</td>
+                          <td>John Doe</td>
+                          <td>2/12/2024</td>
+                          <td>10:00</td>
+                          <td>10:30</td>
+                          <td>20.00</td>
+                      </tr>
                 </tbody>
             </table>
             <button class="save-button">Save Changes</button>

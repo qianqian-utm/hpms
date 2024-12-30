@@ -4,14 +4,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>User listing</title>
-<link
+	<meta charset="UTF-8">
+	<title>User listing</title>
+	<link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 	rel="stylesheet">
-<script
+	<script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" type="text/css" href="resources/css/navbar.css">
+	<link rel="stylesheet" type="text/css" href="resources/css/navbar.css">
 </head>
 <body>
 	<%@ include file="topnavbar.jsp"%>
@@ -19,6 +19,9 @@
 		<div class="row">
 			<%@ include file="sidebar.jsp"%>
 			<main class="col-md-10 ms-sm-auto px-4">
+				<c:if test="${not empty successMessage}">
+				    <div class="alert alert-success">${successMessage}</div>
+				</c:if>
 				<div class="d-flex justify-content-between">
 					<h3>User information</h3>
 					<a href="add_user">
@@ -42,7 +45,7 @@
 					<tbody>
 						<c:forEach items="${users}" var="user">
 							<tr>
-								<td>${user.firstName}${user.lastName}</td>
+								<td>${user.firstName} ${user.lastName}</td>
 								<td>${user.gender == 1 ? 'Male' : (user.gender == 2 ? 'Female' : '-')}</td>
 								<td>${user.phoneNumber}</td>
 								<td>${user.email}</td>

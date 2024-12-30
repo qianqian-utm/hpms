@@ -1,49 +1,67 @@
 package com.hpms.service;
 
-import com.hpms.model.User; 
+import com.hpms.model.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+import java.util.List;
+
+import javax.transaction.Transactional;
+
 
 @Service
 public class UserService {
-    private static ArrayList<User> userList = new ArrayList<>();
-    
-    public UserService() {
-        if (userList.isEmpty()) {
-            prepareDummyUserData();
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	@Transactional
+    public void addUser(User newUser) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.save(newUser);
+            transaction.commit();
         }
     }
 
-    public ArrayList<User> prepareDummyUserData() {
-        userList.add(new User("Elizabeth", "Polson", "elsabethpolsan@hotmail.com", "+91 12345 67890", 1, 2));
-        userList.add(new User("John", "David", "davidjohn22@gmail.com", "+91 12345 67890", 1, 1));
-        userList.add(new User("Krishtav", "Rajan", "krishnarajan23@gmail.com", "+91 12345 67890", 2, 1));
-        userList.add(new User("Sumanth", "Tinson", "tintintin@gmail.com", "+91 12345 67890", 2, 2));
-        userList.add(new User("EG", "Subramani", "egs31322@gmail.com", "+91 12345 67890", 2, 2));
-        userList.add(new User("Ranjan", "Maari", "ranajanmaari@yahoo.com", "+91 12345 67890", 2, 1));
-        userList.add(new User("Philipile", "Gopal", "gopal22@gmail.com", "+91 12345 67890", 2, 1));
-        
-        return userList;
-    }
-    
-    public ArrayList<User> addUser(User newUser) {
-        userList.add(newUser);
-        return userList;
-    }
-    
-    public ArrayList<User> getUserList() {
-        return userList;
-    }
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public List<User> getUserList() {
+	    try (Session session = sessionFactory.openSession()) {
+	        return session.createQuery("from User order by role asc, firstName asc").list();
+	    }
+	}
 
+	@Transactional
     public void updateUser(User updatedUser) {
-        // Find and update the user in the list
-        for (int i = 0; i < userList.size(); i++) {
-            User existingUser = userList.get(i);
-            // Currently use email to identify user
-            if (existingUser.getEmail().equals(updatedUser.getEmail())) {
-                userList.set(i, updatedUser);
-                break;
-            }
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.update(updatedUser);
+            transaction.commit();
         }
     }
+
+	@Transactional
+    public void deleteUser(Long userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            User user = session.get(User.class, userId);
+            if (user != null) {
+                session.delete(user);
+            }
+            transaction.commit();
+        }
+    }
+	
+	@Transactional
+	public User getUserByEmailAndPassword(String email, String password) {
+	    try (Session session = sessionFactory.openSession()) {
+	        return (User) session.createQuery("FROM User WHERE email = :email AND password = :password")
+	            .setParameter("email", email)
+	            .setParameter("password", password)
+	            .uniqueResult();
+	    }
+	}
 }

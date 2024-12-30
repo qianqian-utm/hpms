@@ -19,7 +19,7 @@
 				<li class="nav-item"><a class="nav-link active"
 					href="userlisting"> Users <i class="bi bi-people-fill"></i>
 				</a></li>
-				<li class="nav-item"><a class="nav-link" href="doctorAvailability">
+				<li class="nav-item"><a class="nav-link" href="#">
 						Appointments <i class="bi bi-file-earmark-text"></i>
 				</a></li>
 				<li class="nav-item"><a class="nav-link" href="medicalrecord"> Medical

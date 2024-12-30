@@ -10,7 +10,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class TransactionServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Mock data for transaction records
         List<TransactionRecord> transactionList = new ArrayList<>();
         

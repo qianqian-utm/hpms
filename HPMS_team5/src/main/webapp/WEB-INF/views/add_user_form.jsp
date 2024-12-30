@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,15 +11,15 @@
 <body>
 	<div class="container mt-5">
 	    <h3 class="mb-4">Add user</h3>
-	    <form action="UserServlet" method="post">
+	    <form action="add_user" method="post">
 			<input type="hidden" name="action" value="createUser">
 	        <div class="mb-3">
-	            <label for="first_name" class="form-label">First name</label>
-	            <input type="text" class="form-control" name="first_name" id="first_name" required>
+	            <label for="firstName" class="form-label">First name</label>
+	            <input type="text" class="form-control" name="firstName" id="firstName" required>
 	        </div>
 	        <div class="mb-3">
-	            <label for="last_name" class="form-label">Last name</label>
-	            <input type="text" class="form-control" name="last_name" id="last_name" required>
+	            <label for="lastName" class="form-label">Last name</label>
+	            <input type="text" class="form-control" name="lastName" id="lastName" required>
 	        </div>
 	        <div class="mb-3">
 	            <label class="form-label d-block">Gender</label>
@@ -32,16 +33,16 @@
 	            </div>
 	        </div>
 	        <div class="mb-3">
-	            <label for="phone" class="form-label">Phone number</label>
-	            <input type="tel" id="phone" name="phone" class="form-control">
+	            <label for="phoneNumber" class="form-label">Phone number</label>
+	            <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control">
 	        </div>
 	        <div class="mb-3">
 	            <label for="email" class="form-label">Email address</label>
 	            <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
 	        </div>
 	        <div class="mb-3">
-	            <label for="user_role" class="form-label">User type</label>
-	            <select class="form-select" name="user_role" id="user_role" required>
+	            <label for="role" class="form-label">User type</label>
+	            <select class="form-select" name="role" id="role" required>
 	                <option value="1">Admin</option>
 	                <option value="2">Patient</option>
 	            </select>

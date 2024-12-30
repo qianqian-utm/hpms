@@ -1,50 +1,74 @@
 package com.hpms.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "users")
 public class User {
-	private String first_name;
-	private String last_name;
-	private String email;
-	private String password;
-	private String phone_number;
-	private int role; // 1=admin, 2=patient
-	private int gender; // 1=male, 2=female
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "first_name")
+    private String firstName;
+    
+    @Column(name = "last_name")
+    private String lastName;
+    
+    @Column(unique = true)
+    private String email;
+    
+    private String password;
+    
+    @Column(name = "phone_number")
+    private String phoneNumber;
+    
+    private int role;
+    private int gender;
 // Constructors
 	public User() {
 		
 	}
 
 	public User( String first_name, String last_name, String email, String password, String phone_number, int role, int gender) {
-		this.first_name = first_name;
-		this.last_name = last_name;
+		this.firstName = first_name;
+		this.lastName = last_name;
 		this.email = email;
 		this.password = password;
-		this.phone_number = phone_number;
+		this.phoneNumber = phone_number;
 		this.role = role;
 		this.gender = gender;
 	}
 	
 	public User(String first_name, String last_name, String email, String phone_number, int role, int gender) {
-        this.first_name = first_name;
-        this.last_name = last_name;
+        this.firstName = first_name;
+        this.lastName = last_name;
         this.email = email;
-        this.phone_number = phone_number;
+        this.phoneNumber = phone_number;
         this.role = role;
         this.gender = gender;
     }
 
 //	Getters and Setters
+	public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+   
 	public String getFirstName() {
-		return first_name;
+		return firstName;
 	}
 	public void setFirstName(String first_name) {
-		this.first_name = first_name;
+		this.firstName = first_name;
 	}
 	public String getLastName() {
-		return last_name;
+		return lastName;
 	}
 	public void setLastName(String last_name) {
-		this.last_name = last_name;
+		this.lastName = last_name;
 	}
 	public String getEmail() {
 		return email;
@@ -59,10 +83,10 @@ public class User {
 		this.password = password;
 	}
 	public String getPhoneNumber() {
-		return phone_number;
+		return phoneNumber;
 	}
 	public void setPhoneNumber(String phone_number) {
-		this.phone_number = phone_number;
+		this.phoneNumber = phone_number;
 	}
 	public int getRole() {
 		return role;
