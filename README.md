@@ -14,5 +14,6 @@ Connecting to the database
 Note that the current URL in HibernateConfig.java is set to //localhost:3307, do update it according to your local port number.
 
 # Layout
-layout.jsp is used for the main layout throughout the site/
+layout.jsp is used for the main layout throughout the site
+
 You may refer to the implementation in UserController - addUserForm function.
