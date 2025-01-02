@@ -1,3 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<c:if test="${not empty errorMessage}">
+	<div class="alert alert-danger">${errorMessage}</div>
+</c:if>
 <div class="container mt-5">
 	<h3 class="mb-4">Edit User</h3>
 	<form action="${pageContext.request.contextPath}/edit_user/${user.id}" method="post">

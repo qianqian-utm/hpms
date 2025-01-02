@@ -17,7 +17,7 @@
 		<div class="sidebar-sticky d-flex flex-column h-100">
 			<a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"><img src="${pageContext.request.contextPath}/resources/img/hpms-logo.png" width="25px" alt="HPMS logo">HPMS</a>
 			<ul class="nav flex-column">
-				<li class="nav-item"><a class="nav-link active"
+				<li class="nav-item"><a class="nav-link ${currentPage == 'userlisting' ? 'active' : ''}"
 					href="userlisting"> Users <i class="bi bi-people-fill"></i>
 				</a></li>
 				<li class="nav-item"><a class="nav-link" href="#">
