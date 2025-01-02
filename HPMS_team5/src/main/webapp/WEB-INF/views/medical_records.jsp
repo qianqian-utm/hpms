@@ -14,7 +14,6 @@
 <link rel="stylesheet" type="text/css" href="resources/css/navbar.css">
 </head>
 <body>
-	<%@ include file="topnavbar.jsp"%>
 	<div class="container-fluid">
 		<div class="row">
 			<%@ include file="sidebar.jsp"%>

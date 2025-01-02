@@ -73,6 +73,9 @@
 
 							<button type="submit" class="btn btn-primary w-100">Sign
 								Up</button>
+							<div class="mt-3 text-center">
+							    Already have an account? <a href="${pageContext.request.contextPath}/login" class="text-decoration-none">Sign in</a>
+							</div>
 						</form>
 					</div>
 				</div>

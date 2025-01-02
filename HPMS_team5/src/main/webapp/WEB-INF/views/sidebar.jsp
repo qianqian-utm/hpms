@@ -14,7 +14,8 @@
 </head>
 <body>
 	<nav class="col-md-2 d-none d-md-block bg-light sidebar">
-		<div class="sidebar-sticky">
+		<div class="sidebar-sticky d-flex flex-column h-100">
+			<a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"><img src="${pageContext.request.contextPath}/resources/img/hpms-logo.png" width="25px" alt="HPMS logo">HPMS</a>
 			<ul class="nav flex-column">
 				<li class="nav-item"><a class="nav-link active"
 					href="userlisting"> Users <i class="bi bi-people-fill"></i>
@@ -33,6 +34,11 @@
 				</a></li>
 
 			</ul>
+			<div class="mt-auto mb-3">
+			    <a href="signout" class="btn btn-light">
+			      <i class="bi bi-box-arrow-right"></i> Logout
+			    </a>
+		    </div>
 
 		</div>
 	</nav>

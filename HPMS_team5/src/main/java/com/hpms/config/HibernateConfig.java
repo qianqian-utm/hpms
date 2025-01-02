@@ -7,6 +7,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -15,6 +16,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+@EnableWebMvc
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"com.hpms.controller", "com.hpms.service", "com.hpms.model"})
 public class HibernateConfig implements WebMvcConfigurer {
@@ -26,7 +28,16 @@ public class HibernateConfig implements WebMvcConfigurer {
         dataSource.setUrl("jdbc:mysql://localhost:3307/hpms");
         dataSource.setUsername("root");
         dataSource.setPassword("");
+        dataSource.setConnectionProperties(getConnectionProperties());
         return dataSource;
+    }
+
+    private Properties getConnectionProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("autoReconnect", "true");
+        properties.setProperty("useSSL", "false");
+        properties.setProperty("allowPublicKeyRetrieval", "true");
+        return properties;
     }
 
     @Bean
@@ -58,10 +69,11 @@ public class HibernateConfig implements WebMvcConfigurer {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-    
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/resources/");
+               .addResourceLocations("/resources/")
+               .setCachePeriod(31556926);
     }
 }

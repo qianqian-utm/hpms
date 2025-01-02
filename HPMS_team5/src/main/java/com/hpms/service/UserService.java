@@ -4,13 +4,11 @@ import com.hpms.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 import javax.transaction.Transactional;
-
 
 @Service
 public class UserService {
@@ -36,11 +34,21 @@ public class UserService {
 
 	@Transactional
     public void updateUser(User updatedUser) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.update(updatedUser);
-            transaction.commit();
-        }
+		try (Session session = sessionFactory.openSession()) {
+	        Transaction transaction = session.beginTransaction();
+	        User existingUser = session.get(User.class, updatedUser.getId());
+	        if (existingUser != null) {
+	            existingUser.setFirstName(updatedUser.getFirstName());
+	            existingUser.setLastName(updatedUser.getLastName());
+	            existingUser.setEmail(updatedUser.getEmail());
+	            existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+	            existingUser.setGender(updatedUser.getGender());
+	            existingUser.setRole(updatedUser.getRole());
+	            // Password is not updated
+	            session.update(existingUser);
+	        }
+	        transaction.commit();
+	    }
     }
 
 	@Transactional
@@ -62,6 +70,23 @@ public class UserService {
 	            .setParameter("email", email)
 	            .setParameter("password", password)
 	            .uniqueResult();
+	    }
+	}
+	
+	@Transactional
+	public boolean getUserByEmail(String email) {
+	    try (Session session = sessionFactory.openSession()) {
+	        Long count = (Long) session.createQuery("SELECT COUNT(*) FROM User WHERE email = :email")
+	            .setParameter("email", email)
+	            .uniqueResult();
+	        return count > 0;
+	    }
+	}
+	
+	@Transactional
+	public User getUserById(Long userId) {
+	    try (Session session = sessionFactory.openSession()) {
+	        return session.get(User.class, userId);
 	    }
 	}
 }
