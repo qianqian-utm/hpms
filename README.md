@@ -17,3 +17,16 @@ Note that the current URL in HibernateConfig.java is set to //localhost:3307, do
 layout.jsp is used for the main layout throughout the site
 
 You may refer to the implementation in UserController - addUserForm function.
+
+# Navbar
+To make the nav items be active based on the page, add in an attribute called `currentPage`
+
+Example:
+
+_In controller_
+
+```mv.addObject("currentPage", "userlisting");```
+
+_In sidebar.jsp > nav item_
+
+```<a class="nav-link ${currentPage == 'userlisting' ? 'active' : ''}"```
