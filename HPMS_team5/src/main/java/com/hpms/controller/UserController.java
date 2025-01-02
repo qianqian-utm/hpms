@@ -22,19 +22,23 @@ public class UserController {
 
 	@GetMapping("/add_user")
 	public ModelAndView addUserForm(HttpServletRequest request) {
-	        request.setAttribute("content", "add_user_form"); 
-	        return mv;
-	    }
-	    return new ModelAndView("redirect:/login");
+		HttpSession session = request.getSession();
+		if (isUserLoggedIn(session)) {
+			User loggedInUser = (User) session.getAttribute("loggedUser");
+			if(loggedInUser.getRole()!=1) {
+				return new ModelAndView("redirect:/login");
+			}
+
+			ModelAndView mv = new ModelAndView("layout");
+			mv.addObject("currentPage", "userlisting");
+			request.setAttribute("title", "Add User");
+			request.setAttribute("content", "add_user_form"); 
+			return mv;
+		}
+		return new ModelAndView("redirect:/login");
 	}
 
 	@PostMapping("/add_user")
-	public String addUser(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
-	    User loggedInUser = (User) session.getAttribute("loggedUser");
-	    if (loggedInUser == null || loggedInUser.getRole() != 1) {
-	        return "redirect:/login";
-	    }
-
 	public ModelAndView addUser(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
 		if (!isUserLoggedIn(session)) {
 			return new ModelAndView("redirect:/login");
