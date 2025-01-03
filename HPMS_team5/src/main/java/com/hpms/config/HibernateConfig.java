@@ -18,7 +18,7 @@ import java.util.Properties;
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"com.hpms.controller", "com.hpms.service", "com.hpms.model"})
+@ComponentScan(basePackages = {"com.hpms.controller", "com.hpms.service", "com.hpms.model", "com.hpms.repository"})
 public class HibernateConfig implements WebMvcConfigurer {
 
     @Bean

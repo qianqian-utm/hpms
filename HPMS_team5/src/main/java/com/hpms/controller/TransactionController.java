@@ -42,7 +42,7 @@ public class TransactionController {
         }
 
         try {
-            transactionService.changeTransactionStatus(id, status);
+            transactionService.updateTransactionStatus(id, status);
             redirectAttributes.addFlashAttribute("successMessage", "Transaction status updated successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
