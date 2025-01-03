@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.stream.Collectors;
 
 @Controller
 public class DoctorAvailabilityController {
@@ -20,7 +21,7 @@ public class DoctorAvailabilityController {
             service.getAvailableDates(doctorName)
                   .stream()
                   .map(da -> da.getAvailableDate())
-                  .toList());
+                  .collect(Collectors.toList()));
         return "doctor-availability";  // This refers to your JSP file
     }
 }
