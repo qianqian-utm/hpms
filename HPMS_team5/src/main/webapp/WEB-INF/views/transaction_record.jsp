@@ -5,132 +5,86 @@
 <head>
     <meta charset="UTF-8">
     <title>Transaction Records</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-        }
-        .container {
-            width: 80%;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .header {
-            background: #007bff;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .content {
-            padding: 20px;
-        }
-        .nav {
-            display: flex;
-            flex-direction: column;
-            width: 20%;
-            background: #f1f1f1;
-            padding: 20px;
-            float: left;
-            height: 100%;
-        }
-        .nav a {
-            text-decoration: none;
-            padding: 10px 15px;
-            color: #333;
-            display: block;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .nav a:hover {
-            background: #007bff;
-            color: #fff;
-        }
-        .main {
-            margin-left: 22%;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th, table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        table th {
-            background-color: #f4f4f4;
-        }
-        .save-button {
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .save-button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Transaction Records</h1>
+    <div class="container mt-4">
+        <!-- Display success message if exists -->
+        <c:if test="${not empty successMessage}">
+            <div class="alert alert-success">${successMessage}</div>
+        </c:if>
+
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between mb-3">
+            <h3>Transaction Records</h3>
+            <a href="add_transaction">
+                <button type="button" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>Add Transaction
+                </button>
+            </a>
         </div>
-        <div class="nav">
-            <a href="appointments.jsp">Appointments</a>
-            <a href="medical_history.jsp">Medical History</a>
-            <a href="transaction_record.jsp" style="background-color: #007bff; color: white;">Transaction Records</a>
-            <a href="profile.jsp">My Account</a>
-            <a href="logout.jsp">Logout</a>
-        </div>
-        <div class="main">
-            <table>
-                <thead>
+
+        <!-- Navigation Section -->
+        <nav class="mb-3">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="appointments.jsp">Appointments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="medical_history.jsp">Medical History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="transaction_record.jsp">Transaction Records</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="profile.jsp">My Account</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout.jsp">Logout</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Table Section -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Doctor</th>
+                    <th scope="col">Patient</th>
+                    <th scope="col">Appointment Date</th>
+                    <th scope="col">Start Time</th>
+                    <th scope="col">End Time</th>
+                    <th scope="col">Amount (USD)</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach items="${transactions}" var="transaction">
                     <tr>
-                        <th>Doctor</th>
-                        <th>Patient</th>
-                        <th>Appointment Date</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Amount (USD)</th>
+                        <td>${transaction.doctorName}</td>
+                        <td>${transaction.patientName}</td>
+                        <td>${transaction.appointmentDate}</td>
+                        <td>${transaction.startTime}</td>
+                        <td>${transaction.endTime}</td>
+                        <td>${transaction.amount}</td>
+                        <td>${transaction.status == 'PAID' ? 'Paid' : 'Unpaid'}</td>
+                        <td>
+                            <form action="change_status/${transaction.id}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-outline-secondary" name="status" value="PAID" ${transaction.status == 'PAID' ? 'disabled' : ''}>
+                                    Mark as Paid
+                                </button>
+                                <button type="submit" class="btn btn-outline-secondary" name="status" value="UNPAID" ${transaction.status == 'UNPAID' ? 'disabled' : ''}>
+                                    Mark as Unpaid
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                      <tr>
-                          <td>John Doe</td>
-                          <td>Sarah Care</td>
-                          <td>9/12/2024</td>
-                          <td>11:00</td>
-                          <td>11:30</td>
-                          <td>40.00</td>
-                      </tr>
-                      <tr>
-                          <td>Claire Holmes</td>
-                          <td>John Doe</td>
-                          <td>2/12/2024</td>
-                          <td>10:00</td>
-                          <td>10:30</td>
-                          <td>20.00</td>
-                      </tr>
-                </tbody>
-            </table>
-            <button class="save-button">Save Changes</button>
-        </div>
+                </c:forEach>
+            </tbody>
+        </table>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
