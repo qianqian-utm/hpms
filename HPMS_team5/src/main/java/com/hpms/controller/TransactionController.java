@@ -28,7 +28,7 @@ public class TransactionController {
             ModelAndView mv = new ModelAndView("layout");
             mv.addObject("currentPage", "transaction_record");
             request.setAttribute("title", "Transaction Records");
-            request.setAttribute("content", "transaction_table"); 
+            request.setAttribute("content", "transaction_record"); 
             mv.addObject("transactions", transactionService.getAllTransactions());
             return mv;
         }
