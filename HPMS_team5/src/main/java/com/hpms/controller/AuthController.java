@@ -18,9 +18,15 @@ import com.hpms.service.UserService;
 
 @Controller
 public class AuthController {
+	private final UserService userService;
+	private static final String REDIRECT_LOGIN = "redirect:/login";
+	private static final String ERROR_ATTRIBUTE = "error";
+
 	@Autowired
-	private UserService userService;
-	
+	public AuthController(UserService userService) {
+		this.userService = userService;
+	}
+
 	@GetMapping("/")
 	public ModelAndView checkUserStatus(HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -30,33 +36,33 @@ public class AuthController {
 			// User is logged in, redirect to dashboard
 			return new ModelAndView("redirect:/dashboard");
 		} else {
-			// User is not logged in, redirect to login page
-			return new ModelAndView("redirect:/login");
+			return new ModelAndView(REDIRECT_LOGIN);
 		}
 	}
 
 	@GetMapping("/login")
 	public String login(Model model) {
-	    return "login";
+		return "login";
 	}
-	
+
 	@PostMapping("/login")
 	public String loginUser(@RequestParam String email,
-	                       @RequestParam String password,
-	                       HttpSession session,
-	                       Model model,
-	                       RedirectAttributes redirectAttributes) {
-	    try {
-	        User user = userService.getUserByEmailAndPassword(email, password);
-	        if (user != null) {
-	            session.setAttribute("loggedUser", user);
-	            return user.getRole() == 1 ? "redirect:/userlisting" : "redirect:/appointmentlisting";
-	        }
-	        redirectAttributes.addFlashAttribute("error", "Invalid email or password");
-	    } catch (Exception e) {
-	        redirectAttributes.addFlashAttribute("error", "An error occurred");
-	    }
-	    return "redirect:/login";
+			@RequestParam String password,
+			HttpSession session,
+			Model model,
+			RedirectAttributes redirectAttributes) {
+		try {
+			User user = userService.getUserByEmailAndPassword(email, password);
+			if (user != null) {
+				session.setAttribute("loggedUser", user);
+				return user.getRole() == 1 ? "redirect:/userlisting" : "redirect:/appointmentlisting";
+			}
+			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Invalid email or password");
+			return REDIRECT_LOGIN;
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "An error occurred");
+			return REDIRECT_LOGIN;
+		}
 	}
 
 	@GetMapping("/register")
@@ -69,29 +75,33 @@ public class AuthController {
 	                         @RequestParam String confirmPassword,
 	                         RedirectAttributes redirectAttributes) {
 	    // Check if email already exists
-	    if (userService.getUserByEmail(user.getEmail())) {
-	        redirectAttributes.addFlashAttribute("error", "Email already registered");
-	        return "redirect:/register";
-	    }
+			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Email already registered");
+			return "redirect:/register";
+		}
 
-	    // Validate password match
-	    if (!user.getPassword().equals(confirmPassword)) {
-	        redirectAttributes.addFlashAttribute("error", "Passwords do not match");
-	        return "redirect:/register";
-	    }
+	// Validate password match
+	if(!user.getPassword().equals(confirmPassword))
 
-	    user.setRole(2); // Set default role to 2 (patient)
-
-	    try {
-	        userService.addUser(user);
-	        redirectAttributes.addFlashAttribute("message", "Registration successful");
-	        return "redirect:/login";
-	    } catch (Exception e) {
-	        redirectAttributes.addFlashAttribute("error", e.getMessage());
-	        return "redirect:/register";
-	    }
+	{
+		redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Passwords do not match");
+		return "redirect:/register";
 	}
-	
+
+	user.setRole(2); // Set default role to 2 (patient)
+
+	try
+	{
+		userService.addUser(user);
+		redirectAttributes.addFlashAttribute("message", "Registration successful");
+		return "redirect:/login";
+	}catch(
+	Exception e)
+	{
+		redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, e.getMessage());
+		return "redirect:/register";
+	}
+	}
+
 	@GetMapping("/signout")
 	public String signOut(HttpSession session) {
 	    session.invalidate();

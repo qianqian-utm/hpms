@@ -6,87 +6,108 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class UserService {
+
+	private final SessionFactory sessionFactory;
+
 	@Autowired
-	private SessionFactory sessionFactory;
+	public UserService(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
 	@Transactional
-    public void addUser(User newUser) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.save(newUser);
-            transaction.commit();
-        }
-    }
+	public void addUser(User newUser) {
+		try (Session session = sessionFactory.openSession()) {
+			Transaction transaction = session.beginTransaction();
+			session.save(newUser);
+			transaction.commit();
+		}
+	}
 
 	@Transactional
 	@SuppressWarnings("unchecked")
 	public List<User> getUserList() {
-	    try (Session session = sessionFactory.openSession()) {
-	        return session.createQuery("from User order by role asc, firstName asc").list();
-	    }
+		try (Session session = sessionFactory.openSession()) {
+			return session.createQuery("from User order by role asc, firstName asc").list();
+		}
 	}
 
 	@Transactional
-    public void updateUser(User updatedUser) {
+	public void updateUser(User updatedUser) {
 		try (Session session = sessionFactory.openSession()) {
-	        Transaction transaction = session.beginTransaction();
-	        User existingUser = session.get(User.class, updatedUser.getId());
-	        if (existingUser != null) {
-	            existingUser.setFirstName(updatedUser.getFirstName());
-	            existingUser.setLastName(updatedUser.getLastName());
-	            existingUser.setEmail(updatedUser.getEmail());
-	            existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-	            existingUser.setGender(updatedUser.getGender());
-	            existingUser.setRole(updatedUser.getRole());
-	            // Password is not updated
-	            session.update(existingUser);
-	        }
-	        transaction.commit();
-	    }
-    }
+			Transaction transaction = session.beginTransaction();
+			User existingUser = session.get(User.class, updatedUser.getId());
+			if (existingUser != null) {
+				existingUser.setFirstName(updatedUser.getFirstName());
+				existingUser.setLastName(updatedUser.getLastName());
+				existingUser.setEmail(updatedUser.getEmail());
+				existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+				existingUser.setGender(updatedUser.getGender());
+				existingUser.setRole(updatedUser.getRole());
+				// Password is not updated
+				session.update(existingUser);
+			}
+			transaction.commit();
+		}
+	}
 
 	@Transactional
-    public void deleteUser(Long userId) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            User user = session.get(User.class, userId);
-            if (user != null) {
-                session.delete(user);
-            }
-            transaction.commit();
-        }
-    }
-	
+	public void deleteUser(Long userId) {
+		try (Session session = sessionFactory.openSession()) {
+			Transaction transaction = session.beginTransaction();
+			User user = session.get(User.class, userId);
+			if (user != null) {
+				session.delete(user);
+			}
+			transaction.commit();
+		}
+	}
+
 	@Transactional
 	public User getUserByEmailAndPassword(String email, String password) {
-	    try (Session session = sessionFactory.openSession()) {
-	        return (User) session.createQuery("FROM User WHERE email = :email AND password = :password")
-	            .setParameter("email", email)
-	            .setParameter("password", password)
-	            .uniqueResult();
-	    }
+		try (Session session = sessionFactory.openSession()) {
+			return (User) session.createQuery("FROM User WHERE email = :email AND password = :password")
+					.setParameter("email", email)
+					.setParameter("password", password)
+					.uniqueResult();
+		}
 	}
-	
+
 	@Transactional
 	public boolean getUserByEmail(String email) {
-	    try (Session session = sessionFactory.openSession()) {
-	        Long count = (Long) session.createQuery("SELECT COUNT(*) FROM User WHERE email = :email")
-	            .setParameter("email", email)
-	            .uniqueResult();
-	        return count > 0;
-	    }
+		try (Session session = sessionFactory.openSession()) {
+			Long count = (Long) session.createQuery("SELECT COUNT(*) FROM User WHERE email = :email")
+					.setParameter("email", email)
+					.uniqueResult();
+			return count > 0;
+		}
 	}
-	
+
 	@Transactional
 	public User getUserById(Long userId) {
-	    try (Session session = sessionFactory.openSession()) {
-	        return session.get(User.class, userId);
-	    }
+		try (Session session = sessionFactory.openSession()) {
+			return session.get(User.class, userId);
+		}
+	}
+
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public List<User> getPatients() {
+		try (Session session = sessionFactory.openSession()) {
+			return session.createQuery("FROM User WHERE role = 'PATIENT' ORDER BY firstName ASC").list();
+		}
+	}
+
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public List<User> getDoctors() {
+		try (Session session = sessionFactory.openSession()) {
+			return session.createQuery("FROM User WHERE role = 'DOCTOR' ORDER BY firstName ASC").list();
+		}
 	}
 }

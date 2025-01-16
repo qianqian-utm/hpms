@@ -16,7 +16,7 @@
 				value="${user.lastName}" required>
 		</div>
 		<div class="mb-3">
-			<label class="form-label d-block">Gender</label>
+			<label for="male_radio" class="form-label d-block">Gender</label>
 			<div class="form-check form-check-inline">
 				<input class="form-check-input" type="radio" name="gender"
 					id="male_radio" value="1" ${user.gender == 1 ? 'checked' : ''}>
