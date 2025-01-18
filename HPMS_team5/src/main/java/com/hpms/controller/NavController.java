@@ -1,18 +1,16 @@
 package com.hpms.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.hpms.model.User;
 import com.hpms.service.UserService;
+import java.util.List;
 
 @Controller
 public class NavController {
@@ -35,7 +33,8 @@ public class NavController {
 	}
 
 	@GetMapping("/userlisting")
-	public ModelAndView userListing(@ModelAttribute("successMessage") String successMessage, HttpServletRequest request) {
+	public ModelAndView userListing(@ModelAttribute("successMessage") String successMessage,
+			HttpServletRequest request) {
 		HttpSession session = request.getSession();
 
 		if (isUserLoggedIn(session)) {
@@ -48,7 +47,7 @@ public class NavController {
 			modelAndView.addObject("users", users);
 			modelAndView.addObject("successMessage", successMessage);
 			request.setAttribute("title", "User Listing");
-			request.setAttribute("content", "user_listing"); 
+			request.setAttribute("content", "user_listing");
 			return modelAndView;
 		} else {
 			return new ModelAndView("redirect:/login");
@@ -56,15 +55,11 @@ public class NavController {
 	}
 
 	private boolean isUserLoggedIn(HttpSession session) {
-		if (session.getAttribute("loggedUser")!=null) {
-			return true;
-		}
-		return false;
+		return session.getAttribute("loggedUser") != null;
 	}
 
 	@GetMapping("/appointmentlisting")
 	public String appointmentListing(HttpServletRequest request) {
 		return "appointment_listing";
 	}
-
 }

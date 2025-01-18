@@ -1,7 +1,7 @@
 package com.hpms.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +18,7 @@ import com.hpms.service.UserService;
 
 @Controller
 public class AuthController {
+
 	private final UserService userService;
 	private static final String REDIRECT_LOGIN = "redirect:/login";
 	private static final String ERROR_ATTRIBUTE = "error";
@@ -31,9 +32,7 @@ public class AuthController {
 	public ModelAndView checkUserStatus(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 
-		// Check if loggedUser attribute exists in the session
 		if (session.getAttribute("loggedUser") != null) {
-			// User is logged in, redirect to dashboard
 			return new ModelAndView("redirect:/dashboard");
 		} else {
 			return new ModelAndView(REDIRECT_LOGIN);
@@ -46,11 +45,8 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public String loginUser(@RequestParam String email,
-			@RequestParam String password,
-			HttpSession session,
-			Model model,
-			RedirectAttributes redirectAttributes) {
+	public String loginUser(@RequestParam String email, @RequestParam String password,
+			HttpSession session, Model model, RedirectAttributes redirectAttributes) {
 		try {
 			User user = userService.getUserByEmailAndPassword(email, password);
 			if (user != null) {
@@ -71,41 +67,34 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
-	public String registerUser(@ModelAttribute User user,
-	                         @RequestParam String confirmPassword,
-	                         RedirectAttributes redirectAttributes) {
-	    // Check if email already exists
+	public String registerUser(@ModelAttribute User user, @RequestParam String confirmPassword,
+			RedirectAttributes redirectAttributes) {
+		User existingUser = userService.getUserByEmail(user.getEmail());
+		if (existingUser != null) {
 			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Email already registered");
 			return "redirect:/register";
 		}
 
-	// Validate password match
-	if(!user.getPassword().equals(confirmPassword))
+		if (!user.getPassword().equals(confirmPassword)) {
+			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Passwords do not match");
+			return "redirect:/register";
+		}
 
-	{
-		redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Passwords do not match");
-		return "redirect:/register";
-	}
+		user.setRole(2); // Set default role to 2 (patient)
 
-	user.setRole(2); // Set default role to 2 (patient)
-
-	try
-	{
-		userService.addUser(user);
-		redirectAttributes.addFlashAttribute("message", "Registration successful");
-		return "redirect:/login";
-	}catch(
-	Exception e)
-	{
-		redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, e.getMessage());
-		return "redirect:/register";
-	}
+		try {
+			userService.addUser(user);
+			redirectAttributes.addFlashAttribute("message", "Registration successful");
+			return "redirect:/login";
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return "redirect:/register";
+		}
 	}
 
 	@GetMapping("/signout")
 	public String signOut(HttpSession session) {
-	    session.invalidate();
-	    return "redirect:/login";
+		session.invalidate();
+		return "redirect:/login";
 	}
-
 }

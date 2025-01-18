@@ -10,7 +10,6 @@
   <packaging>war</packaging>
 
   <properties>
-    <!-- Properties for version management -->
     <spring.version>5.3.21</spring.version>
     <hibernate.version>5.6.5.Final</hibernate.version>
     <mysql.connector.version>8.0.23</mysql.connector.version>
@@ -18,8 +17,8 @@
     <hibernate.validator.version>8.0.0.Final</hibernate.validator.version>
     <jakarta.el.version>4.0.2</jakarta.el.version>
     <hikari.version>5.0.1</hikari.version>
-    <maven.compiler.source>8</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -59,15 +58,15 @@
       <version>${mysql.connector.version}</version>
     </dependency>
 
-    <!-- Servlet API (provided by the container) -->
+    <!-- Jakarta Servlet API -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>5.0.0</version>
       <scope>provided</scope>
     </dependency>
 
-    <!-- JSTL (Updated version) -->
+    <!-- JSTL (Updated version for Jakarta) -->
     <dependency>
       <groupId>jakarta.servlet.jsp.jstl</groupId>
       <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>

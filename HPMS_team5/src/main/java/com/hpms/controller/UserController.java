@@ -1,7 +1,7 @@
 package com.hpms.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,14 +25,14 @@ public class UserController {
 		HttpSession session = request.getSession();
 		if (isUserLoggedIn(session)) {
 			User loggedInUser = (User) session.getAttribute("loggedUser");
-			if(loggedInUser.getRole()!=1) {
+			if (loggedInUser.getRole() != 1) {
 				return new ModelAndView("redirect:/login");
 			}
 
 			ModelAndView mv = new ModelAndView("layout");
 			mv.addObject("currentPage", "userlisting");
 			request.setAttribute("title", "Add User");
-			request.setAttribute("content", "add_user_form"); 
+			request.setAttribute("content", "add_user_form");
 			return mv;
 		}
 		return new ModelAndView("redirect:/login");
@@ -43,7 +43,7 @@ public class UserController {
 		if (!isUserLoggedIn(session)) {
 			return new ModelAndView("redirect:/login");
 		}
-		
+
 		ModelAndView mv = new ModelAndView("layout");
 		mv.addObject("currentPage", "userlisting");
 		mv.addObject("title", "Edit User");
@@ -89,7 +89,7 @@ public class UserController {
 		mv.addObject("currentPage", "userlisting");
 		mv.addObject("user", user);
 		request.setAttribute("title", "Edit User");
-		request.setAttribute("content", "edit_user_form"); 
+		request.setAttribute("content", "edit_user_form");
 		return mv;
 	}
 
@@ -127,7 +127,7 @@ public class UserController {
 	}
 
 	@PostMapping("/delete_user/{id}")
-	public String deleteUser(@PathVariable Long id, HttpSession session, 
+	public String deleteUser(@PathVariable Long id, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		User loggedInUser = (User) session.getAttribute("loggedUser");
 		if (loggedInUser == null || loggedInUser.getRole() != 1) {
@@ -144,10 +144,6 @@ public class UserController {
 	}
 
 	private boolean isUserLoggedIn(HttpSession session) {
-		if (session.getAttribute("loggedUser")!=null) {
-			return true;
-		}
-		return false;
+		return session.getAttribute("loggedUser") != null;
 	}
-
 }
