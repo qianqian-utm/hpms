@@ -17,8 +17,13 @@ import com.hpms.service.UserService;
 
 @Controller
 public class UserController {
+	private final UserService userService;
+	private static final String ERROR_MESSAGE = "errorMessage";
+
 	@Autowired
-	private UserService userService;
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
 	@GetMapping("/add_user")
 	public ModelAndView addUserForm(HttpServletRequest request) {
@@ -48,27 +53,28 @@ public class UserController {
 		mv.addObject("currentPage", "userlisting");
 		mv.addObject("title", "Edit User");
 		mv.addObject("content", "edit_user_form");
+		User user = userService.getUserById(id);
 		mv.addObject("user", user);
 
 		String phoneNumber = user.getPhoneNumber();
 		if (phoneNumber == null || phoneNumber.length() < 4) {
-			mv.addObject("errorMessage", "Invalid phone number");
+			mv.addObject(ERROR_MESSAGE, "Invalid phone number");
 			return mv;
 		}
 
 		user.setPassword(phoneNumber.substring(phoneNumber.length() - 4));
 
 		if (userService.getUserByEmail(user.getEmail())) {
-			mv.addObject("errorMessage", "Email already exists");
+			mv.addObject(ERROR_MESSAGE, "Email already exists");
 			return mv;
 		}
 
 		try {
 			userService.addUser(user);
-			redirectAttributes.addFlashAttribute("successMessage", "User updated successfully");
+			redirectAttributes.addFlashAttribute("successMessage", "User added successfully");
 			return new ModelAndView("redirect:/userlisting");
 		} catch (Exception e) {
-			mv.addObject("errorMessage", e.getMessage());
+			mv.addObject(ERROR_MESSAGE, e.getMessage());
 			return mv;
 		}
 	}
@@ -94,7 +100,7 @@ public class UserController {
 	}
 
 	@PostMapping("/edit_user/{id}")
-	public ModelAndView updateUser(@PathVariable Long id, @ModelAttribute User user, HttpSession session) {
+	public ModelAndView updateUser(@PathVariable Long id, @ModelAttribute UserDTO userDTO, HttpSession session) {
 		if (!isUserLoggedIn(session) || ((User) session.getAttribute("loggedUser")).getRole() != 1) {
 			return new ModelAndView("redirect:/login");
 		}
@@ -105,19 +111,23 @@ public class UserController {
 		mv.addObject("content", "edit_user_form");
 		mv.addObject("user", user);
 
-		String phoneNumber = user.getPhoneNumber();
+		String phoneNumber = userDTO.getPhoneNumber();
 		if (phoneNumber == null || phoneNumber.length() < 4) {
 			mv.addObject("errorMessage", "Invalid phone number");
 			return mv;
 		}
 
-		if (userService.getUserByEmail(user.getEmail())) {
+		if (userService.getUserByEmail(userDTO.getEmail())) {
 			mv.addObject("errorMessage", "Email already exists");
 			return mv;
 		}
 
 		try {
+			User user = new User();
 			user.setId(id);
+			user.setName(userDTO.getName());
+			user.setEmail(userDTO.getEmail());
+			user.setPhoneNumber(userDTO.getPhoneNumber());
 			userService.updateUser(user);
 			return new ModelAndView("redirect:/userlisting");
 		} catch (Exception e) {
@@ -137,7 +147,7 @@ public class UserController {
 		try {
 			userService.deleteUser(id);
 			redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully");
-		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute(ERROR_MESSAGE, e.getMessage());
 			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 		}
 		return "redirect:/userlisting";

@@ -1,7 +1,6 @@
 package com.hpms.controller;
 
 import com.hpms.model.MedicalRecord;
-import com.hpms.model.User;
 import com.hpms.service.MedicalRecordService;
 import com.hpms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +11,21 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/medicalRecords")
 public class MedicalRecordController {
 
-    @Autowired
-    private MedicalRecordService medicalRecordService;
+    private final MedicalRecordService medicalRecordService;
+    private final UserService userService;
+    private static final String PATIENTS_ATTRIBUTE = "patients";
+    private static final String DOCTORS_ATTRIBUTE = "doctors";
 
     @Autowired
-    private UserService userService;
+    public MedicalRecordController(MedicalRecordService medicalRecordService, UserService userService) {
+        this.medicalRecordService = medicalRecordService;
+        this.userService = userService;
+    }
 
     @GetMapping
     public String viewMedicalRecords(Model model) {
@@ -34,9 +36,9 @@ public class MedicalRecordController {
 
     @GetMapping("/add")
     public String addMedicalRecordForm(Model model) {
-        model.addAttribute("medicalRecord", new MedicalRecord());
-        model.addAttribute("patients", userService.getPatients());
-        model.addAttribute("doctors", userService.getDoctors());
+        model.addAttribute(PATIENTS_ATTRIBUTE, userService.getPatients());
+        model.addAttribute(DOCTORS_ATTRIBUTE, userService.getDoctors());
+        model.addAttribute(DOCTORS_ATTRIBUTE, userService.getDoctors());
         return "addMedicalRecord";
     }
 
@@ -65,7 +67,7 @@ public class MedicalRecordController {
     }
 
     @PostMapping("/edit")
-    public String editMedicalRecord(@Valid @ModelAttribute MedicalRecord medicalRecord, BindingResult result,
+    public String editMedicalRecord(@Valid @ModelAttribute MedicalRecordDTO medicalRecordDTO, BindingResult result,
             Model model) {
         if (result.hasErrors()) {
             model.addAttribute("patients", userService.getPatients());

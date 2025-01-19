@@ -14,7 +14,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hpms.model.User;
+import com.hpms.dto.UserDTO;
 import com.hpms.service.UserService;
+
+import java.io.Serializable;
 
 @Controller
 public class AuthController {
@@ -22,6 +25,7 @@ public class AuthController {
 	private final UserService userService;
 	private static final String REDIRECT_LOGIN = "redirect:/login";
 	private static final String ERROR_ATTRIBUTE = "error";
+	private static final String REDIRECT_REGISTER = "redirect:/register";
 
 	@Autowired
 	public AuthController(UserService userService) {
@@ -67,34 +71,37 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
-	public String registerUser(@ModelAttribute User user, @RequestParam String confirmPassword,
+	public String registerUser(@ModelAttribute UserDTO userDTO, @RequestParam String confirmPassword,
 			RedirectAttributes redirectAttributes) {
-		User existingUser = userService.getUserByEmail(user.getEmail());
+		User existingUser = userService.findUserByEmail(userDTO.getEmail());
 		if (existingUser != null) {
-			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Email already registered");
-			return "redirect:/register";
+			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Email already exists");
+			return REDIRECT_REGISTER;
 		}
 
-		if (!user.getPassword().equals(confirmPassword)) {
+		if (!userDTO.getPassword().equals(confirmPassword)) {
 			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Passwords do not match");
-			return "redirect:/register";
+			return REDIRECT_REGISTER;
 		}
 
+		User user = new User();
+		user.setEmail(userDTO.getEmail());
+		user.setPassword(userDTO.getPassword());
 		user.setRole(2); // Set default role to 2 (patient)
 
 		try {
 			userService.addUser(user);
 			redirectAttributes.addFlashAttribute("message", "Registration successful");
-			return "redirect:/login";
+			return REDIRECT_LOGIN;
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, e.getMessage());
-			return "redirect:/register";
+			return REDIRECT_REGISTER;
 		}
 	}
 
 	@GetMapping("/signout")
 	public String signOut(HttpSession session) {
 		session.invalidate();
-		return "redirect:/login";
+		return REDIRECT_LOGIN;
 	}
 }

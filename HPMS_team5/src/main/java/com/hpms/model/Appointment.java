@@ -6,73 +6,89 @@ import java.util.Date;
 public class Appointment {
 	private User doctor;
 	private User patient;
-	private Date appointment_date;
-	private Time start_time;
-	private Time end_time;
-	private int appointment_status;
-	private int appointment_type;
-	private TransactionRecord transaction_record;
-	
+	private Date appointmentDate;
+	private Time startTime;
+	private Time endTime;
+	private int appointmentStatus;
+	private int appointmentType;
+	private TransactionRecord transactionRecord;
+
 	// Constructors
-	public Appointment(User doctor,User patient,Date appointment_date,Time start_time,Time end_time,int appointment_status,int appointment_type) {
+	public Appointment(User doctor, User patient, Date appointmentDate, Time startTime, Time endTime,
+			int appointmentStatus, int appointmentType) {
 		this.doctor = doctor;
 		this.patient = patient;
-		this.appointment_date = appointment_date;
-		this.start_time = start_time;
-		this.end_time = end_time;
-		this.appointment_status = appointment_status;
-		this.appointment_type = appointment_type;
+		this.appointmentDate = appointmentDate;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.appointmentStatus = appointmentStatus;
+		this.appointmentType = appointmentType;
 	}
 
 	// Getters and setters
-	
+
 	public User getDoctor() {
 		return doctor;
 	}
+
 	public void setDoctor(User doctor) {
 		this.doctor = doctor;
 	}
+
 	public User getPatient() {
 		return patient;
 	}
+
 	public void setPatient(User patient) {
 		this.patient = patient;
 	}
+
 	public Date getAppointmentDate() {
-		return appointment_date;
+		return appointmentDate;
 	}
-	public void setAppointmentDate(Date appointment_date) {
-		this.appointment_date = appointment_date;
+
+	public void setAppointmentDate(Date appointmentDate) {
+		this.appointmentDate = appointmentDate;
 	}
+
 	public Time getStartTime() {
-		return start_time;
+		return startTime;
 	}
-	public void setStartTime(Time start_time) {
-		this.start_time = start_time;
+
+	public void setStartTime(Time startTime) {
+		this.startTime = startTime;
 	}
+
 	public Time getEndTime() {
-		return end_time;
+		return endTime;
 	}
-	public void setEndTime(Time end_time) {
-		this.end_time = end_time;
+
+	public void setEndTime(Time endTime) {
+		this.endTime = endTime;
 	}
+
 	public int getAppointmentStatus() {
-		return appointment_status;
+		return appointmentStatus;
 	}
-	public void setAppointmentStatus(int appointment_status) {
-		this.appointment_status = appointment_status;
+
+	public void setAppointmentStatus(int appointmentStatus) {
+		this.appointmentStatus = appointmentStatus;
 	}
+
 	public int getAppointmentType() {
-		return appointment_type;
+		return appointmentType;
 	}
-	public void setAppointmentType(int appointment_type) {
-		this.appointment_type = appointment_type;
+
+	public void setAppointmentType(int appointmentType) {
+		this.appointmentType = appointmentType;
 	}
+
 	public TransactionRecord getTransactionRecord() {
-		return transaction_record;
+		return transactionRecord;
 	}
-	public void setTransactionRecord(TransactionRecord transaction_record) {
-		this.transaction_record = transaction_record;
+
+	public void setTransactionRecord(TransactionRecord transactionRecord) {
+		this.transactionRecord = transactionRecord;
 	}
-	
+
 }

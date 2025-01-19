@@ -14,8 +14,12 @@ import java.util.List;
 
 @Controller
 public class NavController {
+	private final UserService userService;
+
 	@Autowired
-	private UserService userService;
+	public NavController(UserService userService) {
+		this.userService = userService;
+	}
 
 	@GetMapping("/dashboard")
 	public ModelAndView dashboard() {
