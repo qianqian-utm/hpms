@@ -89,4 +89,18 @@ public class UserService {
 	        return session.get(User.class, userId);
 	    }
 	}
+	
+	@Transactional
+	public List<User> getPatients() {
+	    try (Session session = sessionFactory.openSession()) {
+	        return session.createQuery("FROM User WHERE role = 2").list();
+	    }
+	}
+	
+	@Transactional
+	public List<User> getDoctors() {
+	    try (Session session = sessionFactory.openSession()) {
+	    	return session.createQuery("FROM User WHERE role = 1").list();
+	    }
+	}
 }

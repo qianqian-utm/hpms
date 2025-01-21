@@ -6,22 +6,22 @@ import java.util.Date;
 public class Appointment {
 	private User doctor;
 	private User patient;
-	private Date appointment_date;
-	private Time start_time;
-	private Time end_time;
-	private int appointment_status;
-	private int appointment_type;
-	private TransactionRecord transaction_record;
+	private Date appointmentDate;
+	private Time startTime;
+	private Time endTime;
+	private int appointmentStatus;
+	private int appointmentType;
+	private TransactionRecord transactionRecord;
 	
 	// Constructors
 	public Appointment(User doctor,User patient,Date appointment_date,Time start_time,Time end_time,int appointment_status,int appointment_type) {
 		this.doctor = doctor;
 		this.patient = patient;
-		this.appointment_date = appointment_date;
-		this.start_time = start_time;
-		this.end_time = end_time;
-		this.appointment_status = appointment_status;
-		this.appointment_type = appointment_type;
+		this.appointmentDate = appointment_date;
+		this.startTime = start_time;
+		this.endTime = end_time;
+		this.appointmentStatus = appointment_status;
+		this.appointmentType = appointment_type;
 	}
 
 	// Getters and setters
@@ -39,40 +39,40 @@ public class Appointment {
 		this.patient = patient;
 	}
 	public Date getAppointmentDate() {
-		return appointment_date;
+		return appointmentDate;
 	}
 	public void setAppointmentDate(Date appointment_date) {
-		this.appointment_date = appointment_date;
+		this.appointmentDate = appointment_date;
 	}
 	public Time getStartTime() {
-		return start_time;
+		return startTime;
 	}
 	public void setStartTime(Time start_time) {
-		this.start_time = start_time;
+		this.startTime = start_time;
 	}
 	public Time getEndTime() {
-		return end_time;
+		return endTime;
 	}
 	public void setEndTime(Time end_time) {
-		this.end_time = end_time;
+		this.endTime = end_time;
 	}
 	public int getAppointmentStatus() {
-		return appointment_status;
+		return appointmentStatus;
 	}
 	public void setAppointmentStatus(int appointment_status) {
-		this.appointment_status = appointment_status;
+		this.appointmentStatus = appointment_status;
 	}
 	public int getAppointmentType() {
-		return appointment_type;
+		return appointmentType;
 	}
 	public void setAppointmentType(int appointment_type) {
-		this.appointment_type = appointment_type;
+		this.appointmentType = appointment_type;
 	}
 	public TransactionRecord getTransactionRecord() {
-		return transaction_record;
+		return transactionRecord;
 	}
 	public void setTransactionRecord(TransactionRecord transaction_record) {
-		this.transaction_record = transaction_record;
+		this.transactionRecord = transaction_record;
 	}
 	
 }
