@@ -1,36 +1,47 @@
 package com.hpms.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.*;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+public class User implements UserDetails {
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@Column(name = "id") 
+	private int id;    
+
     @Column(name = "first_name")
     private String firstName;
-    
+
     @Column(name = "last_name")
     private String lastName;
-    
+
     @Column(unique = true)
     private String email;
-    
+
     private String password;
-    
+
     @Column(name = "phone_number")
     private String phoneNumber;
-    
-    private int role;
+
+    @Column(name = "role")
+    private String role;
     private int gender;
+
 // Constructors
 	public User() {
 		
 	}
 
-	public User( String first_name, String last_name, String email, String password, String phone_number, int role, int gender) {
+	public User( String first_name, String last_name, String email, String password, String phone_number, String role, int gender) {
 		this.firstName = first_name;
 		this.lastName = last_name;
 		this.email = email;
@@ -40,7 +51,7 @@ public class User {
 		this.gender = gender;
 	}
 	
-	public User(String first_name, String last_name, String email, String phone_number, int role, int gender) {
+	public User(String first_name, String last_name, String email, String phone_number, String role, int gender) {
         this.firstName = first_name;
         this.lastName = last_name;
         this.email = email;
@@ -50,11 +61,11 @@ public class User {
     }
 
 //	Getters and Setters
-	public Long getId() {
+	public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
    
@@ -88,10 +99,10 @@ public class User {
 	public void setPhoneNumber(String phone_number) {
 		this.phoneNumber = phone_number;
 	}
-	public int getRole() {
+	public String getRole() {
 		return role;
 	}
-	public void setRole(int role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 	public int getGender() {
@@ -100,4 +111,41 @@ public class User {
 	public void setGender(int gender) {
 		this.gender = gender;
 	}
+	
+	@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        if(role == "ADMIN") {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

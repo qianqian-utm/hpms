@@ -9,9 +9,10 @@ import java.util.Date;
 @Entity
 @Table(name = "medical_records")
 public class MedicalRecord {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@Column(name = "id") 
+	private int id;  
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
@@ -39,11 +40,11 @@ public class MedicalRecord {
         this.description = description;
     }
 
-	public Long getId() {
+    public int getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

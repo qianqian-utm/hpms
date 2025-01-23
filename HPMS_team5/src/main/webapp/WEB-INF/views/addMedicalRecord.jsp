@@ -16,6 +16,7 @@
 			<main class="col-md-10 ms-sm-auto px-4">
 				<h2>Add Medical Record</h2>
 				<form action="<c:url value='/medicalRecords/add'/>" method="post">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 					<div class="form-group">
 						<label for="patient.id">Patient</label> <select name="patient.id"
 							class="form-control" required>

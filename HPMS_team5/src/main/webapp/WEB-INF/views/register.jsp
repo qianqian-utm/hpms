@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,9 +27,13 @@
 							<div class="alert alert-success">${message}</div>
 						</c:if>
 
-						<form action="${pageContext.request.contextPath}/register" method="post">
+						<form action="${pageContext.request.contextPath}/register"
+							method="post">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
 							<div class="mb-3">
-								<label class="form-label">First Name</label> <input type="text" name="firstName" class="form-control" required>
+								<label class="form-label">First Name</label> <input type="text"
+									name="firstName" class="form-control" required>
 							</div>
 
 							<div class="mb-3">
@@ -74,7 +79,9 @@
 							<button type="submit" class="btn btn-primary w-100">Sign
 								Up</button>
 							<div class="mt-3 text-center">
-							    Already have an account? <a href="${pageContext.request.contextPath}/login" class="text-decoration-none">Sign in</a>
+								Already have an account? <a
+									href="${pageContext.request.contextPath}/login"
+									class="text-decoration-none">Sign in</a>
 							</div>
 						</form>
 					</div>

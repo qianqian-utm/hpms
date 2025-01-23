@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,37 +14,26 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hpms.model.User;
-import com.hpms.service.UserService;
+import com.hpms.service.IUserService;
 
 @Controller
 public class UserController {
 	@Autowired
-	private UserService userService;
+	private IUserService userService;
+	
+	@PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/add_user")
+    public ModelAndView addUserForm() {
+        ModelAndView mv = new ModelAndView("layout");
+        mv.addObject("currentPage", "userlisting");
+        mv.addObject("title", "Add User");
+        mv.addObject("content", "add_user_form");
+        return mv;
+    }
 
-	@GetMapping("/add_user")
-	public ModelAndView addUserForm(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		if (isUserLoggedIn(session)) {
-			User loggedInUser = (User) session.getAttribute("loggedUser");
-			if(loggedInUser.getRole()!=1) {
-				return new ModelAndView("redirect:/login");
-			}
-
-			ModelAndView mv = new ModelAndView("layout");
-			mv.addObject("currentPage", "userlisting");
-			request.setAttribute("title", "Add User");
-			request.setAttribute("content", "add_user_form"); 
-			return mv;
-		}
-		return new ModelAndView("redirect:/login");
-	}
-
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/add_user")
 	public ModelAndView addUser(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
-		if (!isUserLoggedIn(session)) {
-			return new ModelAndView("redirect:/login");
-		}
-		
 		ModelAndView mv = new ModelAndView("layout");
 		mv.addObject("currentPage", "userlisting");
 		mv.addObject("title", "Edit User");
@@ -58,7 +48,8 @@ public class UserController {
 
 		user.setPassword(phoneNumber.substring(phoneNumber.length() - 4));
 
-		if (userService.getUserByEmail(user.getEmail())) {
+		User existingUser = userService.getUserByEmail(user.getEmail());
+		if (existingUser != null) {
 			mv.addObject("errorMessage", "Email already exists");
 			return mv;
 		}
@@ -73,13 +64,9 @@ public class UserController {
 		}
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/edit_user/{id}")
-	public ModelAndView editUserForm(@PathVariable Long id, HttpSession session, HttpServletRequest request) {
-		User loggedInUser = (User) session.getAttribute("loggedUser");
-		if (loggedInUser == null || loggedInUser.getRole() != 1) {
-			return new ModelAndView("redirect:/login");
-		}
-
+	public ModelAndView editUserForm(@PathVariable int id, HttpSession session, HttpServletRequest request) {
 		User user = userService.getUserById(id);
 		if (user == null) {
 			return new ModelAndView("redirect:/userlisting");
@@ -93,12 +80,9 @@ public class UserController {
 		return mv;
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/edit_user/{id}")
-	public ModelAndView updateUser(@PathVariable Long id, @ModelAttribute User user, HttpSession session) {
-		if (!isUserLoggedIn(session) || ((User) session.getAttribute("loggedUser")).getRole() != 1) {
-			return new ModelAndView("redirect:/login");
-		}
-
+	public ModelAndView updateUser(@PathVariable int id, @ModelAttribute User user, HttpSession session) {
 		ModelAndView mv = new ModelAndView("layout");
 		mv.addObject("currentPage", "userlisting");
 		mv.addObject("title", "Edit User");
@@ -111,9 +95,10 @@ public class UserController {
 			return mv;
 		}
 
-		if (userService.getUserByEmail(user.getEmail())) {
-			mv.addObject("errorMessage", "Email already exists");
-			return mv;
+		User existingUser = userService.getUserByEmail(user.getEmail());
+		if (existingUser != null) {
+		    mv.addObject("errorMessage", "Email already exists");
+		    return mv;
 		}
 
 		try {
@@ -126,14 +111,10 @@ public class UserController {
 		}
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/delete_user/{id}")
-	public String deleteUser(@PathVariable Long id, HttpSession session, 
+	public String deleteUser(@PathVariable int id, HttpSession session, 
 			RedirectAttributes redirectAttributes) {
-		User loggedInUser = (User) session.getAttribute("loggedUser");
-		if (loggedInUser == null || loggedInUser.getRole() != 1) {
-			return "redirect:/login";
-		}
-
 		try {
 			userService.deleteUser(id);
 			redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully");
@@ -141,13 +122,6 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 		}
 		return "redirect:/userlisting";
-	}
-
-	private boolean isUserLoggedIn(HttpSession session) {
-		if (session.getAttribute("loggedUser")!=null) {
-			return true;
-		}
-		return false;
 	}
 
 }

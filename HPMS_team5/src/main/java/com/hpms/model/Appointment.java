@@ -3,7 +3,16 @@ package com.hpms.model;
 import java.sql.Time;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 public class Appointment {
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@Column(name = "id") 
+	private int id;  
 	private User doctor;
 	private User patient;
 	private Date appointmentDate;
@@ -25,6 +34,13 @@ public class Appointment {
 	}
 
 	// Getters and setters
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	
 	public User getDoctor() {
 		return doctor;

@@ -29,15 +29,16 @@
 				<li class="nav-item"><a class="nav-link" href="transaction">
 						Reporting <i class="bi bi-cloud-arrow-down"></i>
 				</a></li>
-				<li class="nav-item"><a class="nav-link" href="editaccount">
+				<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/editaccount">
 						Edit account <i class="bi bi-gear"></i>
 				</a></li>
 
 			</ul>
 			<div class="mt-auto mb-3">
-			    <a href="signout" class="btn btn-light">
-			      <i class="bi bi-box-arrow-right"></i> Logout
-			    </a>
+			    <form action="/HPMS/signout" method="POST">
+				    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				    <button type="submit" class="btn btn-light"><i class="bi bi-box-arrow-right"></i> Logout</button>
+				</form>
 		    </div>
 
 		</div>

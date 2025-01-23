@@ -1,8 +1,8 @@
 package com.hpms.controller;
 
 import com.hpms.model.MedicalRecord;
+import com.hpms.service.IUserService;
 import com.hpms.service.MedicalRecordService;
-import com.hpms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,12 +24,12 @@ public class MedicalRecordController {
     private static final String REDIRECT_MEDICAL_RECORDS = "redirect:/medicalRecords";
 
     private final MedicalRecordService medicalRecordService;
-    private final UserService userService;
+    @Autowired
+	private IUserService userService;
 
     @Autowired
-    public MedicalRecordController(MedicalRecordService medicalRecordService, UserService userService) {
+    public MedicalRecordController(MedicalRecordService medicalRecordService) {
         this.medicalRecordService = medicalRecordService;
-        this.userService = userService;
     }
 
     @GetMapping
@@ -77,7 +77,7 @@ public class MedicalRecordController {
     }
 
     @PostMapping("/edit/{id}")
-    public String editMedicalRecord(@PathVariable Long id,
+    public String editMedicalRecord(@PathVariable int id,
                                   @Valid @ModelAttribute MedicalRecord medicalRecord,
                                   BindingResult result,
                                   Model model) {

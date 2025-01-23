@@ -3,21 +3,26 @@ package com.hpms.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hpms.model.User;
-import com.hpms.service.UserService;
+import com.hpms.service.IUserService;
 
 @Controller
 public class NavController {
 	@Autowired
-	private UserService userService;
+	private IUserService userService;
 
 	@GetMapping("/dashboard")
 	public ModelAndView dashboard() {
@@ -34,32 +39,17 @@ public class NavController {
 		return new ModelAndView("ManageSchedule");
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/userlisting")
-	public ModelAndView userListing(@ModelAttribute("successMessage") String successMessage, HttpServletRequest request) {
-		HttpSession session = request.getSession();
-
-		if (isUserLoggedIn(session)) {
-			// Retrieve user list from service or session
-			List<User> users = userService.getUserList();
-
-			// Add users to the model
-			ModelAndView modelAndView = new ModelAndView("layout");
-			modelAndView.addObject("currentPage", "userlisting");
-			modelAndView.addObject("users", users);
-			modelAndView.addObject("successMessage", successMessage);
-			request.setAttribute("title", "User Listing");
-			request.setAttribute("content", "user_listing"); 
-			return modelAndView;
-		} else {
-			return new ModelAndView("redirect:/login");
-		}
-	}
-
-	private boolean isUserLoggedIn(HttpSession session) {
-		if (session.getAttribute("loggedUser")!=null) {
-			return true;
-		}
-		return false;
+	public String userListing(@ModelAttribute("successMessage") String successMessage, Model model) {
+	    List<User> users = userService.getUserList();
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    User currentUser = userService.getUserByEmail(auth.getName());
+	    
+	    model.addAttribute("users", users);
+	    model.addAttribute("currentUser", currentUser);
+	    model.addAttribute("successMessage", successMessage);
+	    return "user_listing";
 	}
 
 	@GetMapping("/appointmentlisting")
@@ -67,4 +57,41 @@ public class NavController {
 		return "appointment_listing";
 	}
 
+	@GetMapping("/editaccount")
+	public String editAccountForm(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    String userEmail = auth.getName(); // Gets the email
+	    
+	    User user = userService.getUserByEmail(userEmail);
+	    model.addAttribute("loggedInUser", user);
+	    System.out.println("banana gender");
+	    System.out.println(user.getGender());
+		return "edit_account_form";
+	}
+
+	@PostMapping("/editaccount")
+	public ModelAndView updateAccount(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    String userEmail = auth.getName();
+	    
+	    User currentUser = userService.getUserByEmail(userEmail);
+	    ModelAndView mv = new ModelAndView("edit_account_form");
+	    mv.addObject("loggedInUser", user);
+	    if (!userEmail.equals(user.getEmail())) {
+	        User existingUser = userService.getUserByEmail(user.getEmail());
+	        if (existingUser != null) {
+	            mv.addObject("errorMessage", "Email already exists");
+	            return mv;
+	        }
+	    }
+	    
+	    user.setId(currentUser.getId());
+	    user.setPassword(currentUser.getPassword());
+	    user.setRole(currentUser.getRole());
+	    userService.updateUser(user);
+	    
+	    mv.clear(); // Clear previous model attributes 
+	    mv.addObject("successMessage", "Account updated successfully");
+	    return mv;
+	}
 }

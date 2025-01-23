@@ -5,6 +5,7 @@
 <div class="container mt-5">
 	<h3 class="mb-4">Edit User</h3>
 	<form action="${pageContext.request.contextPath}/edit_user/${user.id}" method="post">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		<input type="hidden" name="id" value="${user.id}">
 
 		<div class="mb-3">
@@ -48,8 +49,8 @@
 		<div class="mb-3">
 			<label for="role" class="form-label">User type</label> <select
 				class="form-select" name="role" id="role" required>
-				<option value="1" ${user.role == 1 ? 'selected' : ''}>Admin</option>
-				<option value="2" ${user.role == 2 ? 'selected' : ''}>Patient</option>
+				<option value="ADMIN" ${user.role == 'ADMIN' ? 'selected' : ''}>Admin</option>
+				<option value="USER" ${user.role == 'USER' ? 'selected' : ''}>Patient</option>
 			</select>
 		</div>
 
