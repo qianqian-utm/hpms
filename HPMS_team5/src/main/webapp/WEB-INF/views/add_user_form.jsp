@@ -5,6 +5,7 @@
 <div class="container mt-5">
 	<h3 class="mb-4">Add user</h3>
 	<form action="add_user" method="post">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		<div class="mb-3">
 			<label for="firstName" class="form-label">First name</label> <input
 				type="text" class="form-control" name="firstName" id="firstName"
@@ -41,8 +42,8 @@
 		<div class="mb-3">
 			<label for="role" class="form-label">User type</label> <select
 				class="form-select" name="role" id="role" required>
-				<option value="1" ${user.role == 1 ? 'selected' : ''}>Admin</option>
-				<option value="2" ${user.role == 2 ? 'selected' : ''}>Patient</option>
+				<option value="ADMIN" ${user.role == 'ADMIN' ? 'selected' : ''}>Admin</option>
+				<option value="USER" ${user.role == 'USER' ? 'selected' : ''}>Patient</option>
 			</select>
 		</div>
 		<div class="d-flex justify-content-between">

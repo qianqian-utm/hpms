@@ -9,58 +9,45 @@ import java.util.Date;
 @Entity
 @Table(name = "medical_records")
 public class MedicalRecord {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id")
-    private User patient;
+	@OneToOne(mappedBy = "medicalRecord")
+    private Appointment appointment;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id")
-    private User doctor;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.DATE)
+	private Date date;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
-    private Date date;
+	@Column(length = 2000)
+	private String description;
 
-    @Column(length = 2000)
-    private String description;
+	// Constructors, getters, and setters
+	public MedicalRecord() {
+	}
 
-    // Constructors, getters, and setters
-    public MedicalRecord() {
-    }
+	public MedicalRecord(Appointment appointment, Date date, String description) {
+		this.appointment = appointment;
+		this.date = date;
+		this.description = description;
+	}
 
-    public MedicalRecord(User patient, User doctor, Date date, String description) {
-        this.patient = patient;
-        this.doctor = doctor;
-        this.date = date;
-        this.description = description;
-    }
-
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public User getPatient() {
-		return patient;
+	public Appointment getAppointment() {
+		return appointment;
 	}
 
-	public void setPatient(User patient) {
-		this.patient = patient;
-	}
-
-	public User getDoctor() {
-		return doctor;
-	}
-
-	public void setDoctor(User doctor) {
-		this.doctor = doctor;
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
 	}
 
 	public Date getDate() {
@@ -78,16 +65,11 @@ public class MedicalRecord {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	@Override
 	public String toString() {
-	    return "MedicalRecord{" +
-	            "id=" + id +
-	            ", patient=" + (patient != null ? patient.getId() : "null") +
-	            ", doctor=" + (doctor != null ? doctor.getId() : "null") +
-	            ", date=" + date +
-	            ", description='" + description + '\'' +
-	            '}';
+		return "MedicalRecord{" + "id=" + id + ", appointment=" + (appointment != null ? appointment.getId() : "null")
+				+ ", date=" + date + ", description='" + description + '\'' + '}';
 	}
 
 }
