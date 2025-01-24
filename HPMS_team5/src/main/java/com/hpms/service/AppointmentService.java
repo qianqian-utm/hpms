@@ -26,6 +26,16 @@ public class AppointmentService {
 		}
 	}
 
+
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public List<Appointment> getAppointmentsByUser(int userId) {
+		try (Session session = sessionFactory.openSession()) {
+			return session.createQuery("FROM Appointment WHERE (patient.id = :userId) or (doctor.id = :userId)")
+					.setParameter("userId", userId).list();
+		}
+	}
+	
 	@Transactional
 	@SuppressWarnings("unchecked")
 	public List<Appointment> getAppointmentsByDoctor(int doctorId) {
@@ -145,7 +155,6 @@ public class AppointmentService {
 	}
 
 	@Transactional
-	@SuppressWarnings("unchecked")
 	public Appointment findByMedicalRecordId(Integer medicalRecordId) {
 		try (Session session = sessionFactory.openSession()) {
 			return (Appointment) session.createQuery("FROM Appointment WHERE medicalRecord.id = :medicalRecordId")
@@ -154,11 +163,24 @@ public class AppointmentService {
 	}
 
 	@Transactional
-	@SuppressWarnings("unchecked")
 	public Appointment findByTransactionRecordId(Integer transactionRecordId) {
 		try (Session session = sessionFactory.openSession()) {
 			return (Appointment) session.createQuery("FROM Appointment WHERE transactionRecord.id = :transactionRecordId")
 					.setParameter("transactionRecordId", transactionRecordId).uniqueResult();
 		}
 	}
+	
+	@Transactional 
+    public void deleteAppointments(int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            
+            String hql = "DELETE FROM Appointment WHERE patient.id = :userId OR doctor.id = :userId";
+            session.createQuery(hql)
+                .setParameter("userId", userId)
+                .executeUpdate();
+                
+            transaction.commit();
+        }
+    }
 }

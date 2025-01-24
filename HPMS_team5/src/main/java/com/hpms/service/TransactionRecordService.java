@@ -1,7 +1,6 @@
 package com.hpms.service;
 
 import com.hpms.model.Appointment;
-import com.hpms.model.MedicalRecord;
 import com.hpms.model.TransactionRecord;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

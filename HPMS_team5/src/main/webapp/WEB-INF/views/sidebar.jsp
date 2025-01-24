@@ -33,6 +33,12 @@
 					href="${pageContext.request.contextPath}/appointments">
 						Appointments <i class="bi bi-file-earmark-text"></i>
 				</a></li>
+				<sec:authorize access="hasRole('ADMIN')">
+					<li class="nav-item"><a class="nav-link "
+						href="${pageContext.request.contextPath}/doctoravailability">
+							Doctor availability <i class="bi bi-person-vcard-fill"></i>
+					</a></li>
+				</sec:authorize>
 				<li class="nav-item"><a class="nav-link"
 					href="${pageContext.request.contextPath}/editaccount"> Edit
 						account <i class="bi bi-gear"></i>
@@ -40,9 +46,10 @@
 
 			</ul>
 			<div class="mt-auto mb-3">
-				<form action="/HPMS/signout" method="POST">
-					<input type="hidden" th:name="${_csrf.parameterName}"
-						th:value="${_csrf.token}" />
+				<form action="${pageContext.request.contextPath}/signout"
+					method="POST">
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
 					<button type="submit" class="btn btn-light">
 						<i class="bi bi-box-arrow-right"></i> Logout
 					</button>

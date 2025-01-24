@@ -29,40 +29,35 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	    http
-	        .authorizeHttpRequests(auth -> auth
-	            .antMatchers("/register", "/login", "/css/**", "/js/**").permitAll()
-	            .antMatchers("/userlisting/**", "/add_user/**", "/edit_user/**", "/delete_user/**").hasRole("ADMIN")
-	            .antMatchers("/appointments/**","/transactionrecords/**","/medicalrecords/**", "/editaccount").hasAnyRole("ADMIN", "USER")
-	            .anyRequest().authenticated())
-	        .formLogin(form -> form
-	            .loginPage("/login")
-	            .loginProcessingUrl("/login")
-	            .usernameParameter("email")
-	            .passwordParameter("password")
-	            .successHandler(authenticationSuccessHandler()) // Custom success handler
-	            .permitAll())
-	        .logout(logout -> logout
-	            .logoutUrl("/HPMS/signout")
-	            .logoutSuccessUrl("/HPMS/login"))
-	        .csrf();
-	    return http.build();
+		http.authorizeHttpRequests(auth -> auth.antMatchers("/register", "/login", "/css/**", "/js/**").permitAll()
+				.antMatchers("/userlisting/**", "/add_user/**", "/edit_user/**", "/delete_user/**",
+						"/doctoravailability")
+				.hasRole("ADMIN")
+				.antMatchers("/appointments/**", "/transactionrecords/**", "/medicalrecords/**", "/editaccount")
+				.hasAnyRole("ADMIN", "USER").anyRequest().authenticated())
+				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").usernameParameter("email")
+						.passwordParameter("password").successHandler(authenticationSuccessHandler()) // Custom success
+																										// handler
+						.permitAll())
+				.logout(logout -> logout.logoutUrl("/signout")
+						.logoutSuccessUrl("/login").invalidateHttpSession(true).permitAll())
+				.csrf();
+		return http.build();
 	}
 
 	@Bean
 	public AuthenticationSuccessHandler authenticationSuccessHandler() {
-	    return (request, response, authentication) -> {
-	        String contextPath = request.getContextPath();
-	        Set<String> roles = authentication.getAuthorities().stream()
-	            .map(GrantedAuthority::getAuthority)
-	            .collect(Collectors.toSet());
-	            
-	        if (roles.contains("ROLE_ADMIN")) {
-	            response.sendRedirect(contextPath + "/userlisting");
-	        } else {
-	            response.sendRedirect(contextPath + "/appointments");
-	        }
-	    };
+		return (request, response, authentication) -> {
+			String contextPath = request.getContextPath();
+			Set<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+					.collect(Collectors.toSet());
+
+			if (roles.contains("ROLE_ADMIN")) {
+				response.sendRedirect(contextPath + "/userlisting");
+			} else {
+				response.sendRedirect(contextPath + "/appointments");
+			}
+		};
 	}
 
 	@Bean

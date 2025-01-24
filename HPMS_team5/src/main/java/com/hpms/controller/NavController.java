@@ -2,8 +2,6 @@ package com.hpms.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -78,6 +76,13 @@ public class NavController {
 
 		redirectAttributes.addFlashAttribute("successMessage", "Account updated successfully");
 		return new ModelAndView("redirect:/editaccount");
+	}
+	
+	@GetMapping("/doctoravailability")
+	public String doctoravailability(Model model) {
+		List<User> doctors = userService.getDoctors();
+		model.addAttribute("users", doctors);
+		return "doctoravailability";
 	}
 
 }

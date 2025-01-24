@@ -1,5 +1,6 @@
 package com.hpms.service;
 
+import com.hpms.model.Appointment;
 import com.hpms.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -55,16 +56,27 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Transactional
-	public void deleteUser(int userId) {
-		try (Session session = sessionFactory.openSession()) {
-			Transaction transaction = session.beginTransaction();
-			User user = session.get(User.class, userId);
-			if (user != null) {
-				session.delete(user);
-			}
-			transaction.commit();
-		}
-	}
+    public void deleteUser(int userId) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            
+            // Delete all appointments where user is patient or doctor
+            String hql = "FROM Appointment a WHERE a.patient.id = :userId OR a.doctor.id = :userId";
+            List<Appointment> appointments = session.createQuery(hql, Appointment.class)
+                .setParameter("userId", userId)
+                .getResultList();
+            
+            appointments.forEach(session::delete);
+            
+            // Delete user
+            User user = session.get(User.class, userId);
+            if (user != null) {
+                session.delete(user);
+            }
+            
+            transaction.commit();
+        }
+    }
 
 	@Transactional
 	public User getUserByEmailAndPassword(String email, String password) {
