@@ -33,12 +33,6 @@
 					href="${pageContext.request.contextPath}/appointments">
 						Appointments <i class="bi bi-file-earmark-text"></i>
 				</a></li>
-				<sec:authorize access="hasRole('ADMIN')">
-					<li class="nav-item"><a class="nav-link "
-						href="${pageContext.request.contextPath}/doctoravailability">
-							Doctor availability <i class="bi bi-person-vcard-fill"></i>
-					</a></li>
-				</sec:authorize>
 				<li class="nav-item"><a class="nav-link"
 					href="${pageContext.request.contextPath}/editaccount"> Edit
 						account <i class="bi bi-gear"></i>
