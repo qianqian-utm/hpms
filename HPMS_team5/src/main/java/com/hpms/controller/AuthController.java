@@ -1,8 +1,6 @@
 package com.hpms.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,18 +12,16 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hpms.model.User;
-import com.hpms.dto.UserDTO;
+import com.hpms.dto.UserDTO; // Ensure this exists in com.hpms.dto
 import com.hpms.service.UserService;
-
-import java.io.Serializable;
 
 @Controller
 public class AuthController {
 
 	private final UserService userService;
 	private static final String REDIRECT_LOGIN = "redirect:/login";
-	private static final String ERROR_ATTRIBUTE = "error";
 	private static final String REDIRECT_REGISTER = "redirect:/register";
+	private static final String ERROR_ATTRIBUTE = "error";
 
 	@Autowired
 	public AuthController(UserService userService) {
@@ -33,9 +29,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/")
-	public ModelAndView checkUserStatus(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-
+	public ModelAndView checkUserStatus(HttpSession session) {
 		if (session.getAttribute("loggedUser") != null) {
 			return new ModelAndView("redirect:/dashboard");
 		} else {
@@ -50,7 +44,7 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public String loginUser(@RequestParam String email, @RequestParam String password,
-			HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+			HttpSession session, RedirectAttributes redirectAttributes) {
 		try {
 			User user = userService.getUserByEmailAndPassword(email, password);
 			if (user != null) {
@@ -58,23 +52,21 @@ public class AuthController {
 				return user.getRole() == 1 ? "redirect:/userlisting" : "redirect:/appointmentlisting";
 			}
 			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Invalid email or password");
-			return REDIRECT_LOGIN;
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "An error occurred");
-			return REDIRECT_LOGIN;
 		}
+		return REDIRECT_LOGIN;
 	}
 
 	@GetMapping("/register")
-	public ModelAndView register() {
-		return new ModelAndView("register");
+	public String register() {
+		return "register";
 	}
 
 	@PostMapping("/register")
 	public String registerUser(@ModelAttribute UserDTO userDTO, @RequestParam String confirmPassword,
 			RedirectAttributes redirectAttributes) {
-		User existingUser = userService.findUserByEmail(userDTO.getEmail());
-		if (existingUser != null) {
+		if (userService.findUserByEmail(userDTO.getEmail()) != null) {
 			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, "Email already exists");
 			return REDIRECT_REGISTER;
 		}
@@ -85,23 +77,14 @@ public class AuthController {
 		}
 
 		User user = new User();
+		user.setFirstName(userDTO.getFirstName());
+		user.setLastName(userDTO.getLastName());
 		user.setEmail(userDTO.getEmail());
 		user.setPassword(userDTO.getPassword());
-		user.setRole(2); // Set default role to 2 (patient)
+		user.setRole(2); // Default role as Patient
 
-		try {
-			userService.addUser(user);
-			redirectAttributes.addFlashAttribute("message", "Registration successful");
-			return REDIRECT_LOGIN;
-		} catch (Exception e) {
-			redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE, e.getMessage());
-			return REDIRECT_REGISTER;
-		}
-	}
-
-	@GetMapping("/signout")
-	public String signOut(HttpSession session) {
-		session.invalidate();
+		userService.addUser(user);
+		redirectAttributes.addFlashAttribute("message", "Registration successful");
 		return REDIRECT_LOGIN;
 	}
 }

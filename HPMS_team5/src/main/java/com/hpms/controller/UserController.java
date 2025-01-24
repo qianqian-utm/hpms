@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hpms.model.User;
 import com.hpms.service.UserService;
+import com.hpms.dto.UserDTO; // Update this line with the correct package of UserDTO
 
 @Controller
 public class UserController {
@@ -44,7 +45,8 @@ public class UserController {
 	}
 
 	@PostMapping("/add_user")
-	public ModelAndView addUser(@ModelAttribute User user, HttpSession session, RedirectAttributes redirectAttributes) {
+	public ModelAndView addUser(@ModelAttribute UserDTO userDTO, HttpSession session,
+			RedirectAttributes redirectAttributes) {
 		if (!isUserLoggedIn(session)) {
 			return new ModelAndView("redirect:/login");
 		}
@@ -53,15 +55,17 @@ public class UserController {
 		mv.addObject("currentPage", "userlisting");
 		mv.addObject("title", "Edit User");
 		mv.addObject("content", "edit_user_form");
-		User user = userService.getUserById(id);
-		mv.addObject("user", user);
 
-		String phoneNumber = user.getPhoneNumber();
+		String phoneNumber = userDTO.getPhoneNumber();
 		if (phoneNumber == null || phoneNumber.length() < 4) {
 			mv.addObject(ERROR_MESSAGE, "Invalid phone number");
 			return mv;
 		}
 
+		User user = new User();
+		user.setName(userDTO.getName());
+		user.setEmail(userDTO.getEmail());
+		user.setPhoneNumber(userDTO.getPhoneNumber());
 		user.setPassword(phoneNumber.substring(phoneNumber.length() - 4));
 
 		if (userService.getUserByEmail(user.getEmail())) {
@@ -147,8 +151,8 @@ public class UserController {
 		try {
 			userService.deleteUser(id);
 			redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully");
+		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute(ERROR_MESSAGE, e.getMessage());
-			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 		}
 		return "redirect:/userlisting";
 	}
