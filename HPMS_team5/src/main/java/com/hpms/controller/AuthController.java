@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,43 +21,47 @@ import com.hpms.service.IUserService;
 
 @Controller
 public class AuthController {
-    private final IUserService userService;
-    private final PasswordEncoder passwordEncoder;
+	private final IUserService userService;
+	private final PasswordEncoder passwordEncoder;
 
-    public AuthController(IUserService userService, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-    }
+	public AuthController(IUserService userService, PasswordEncoder passwordEncoder) {
+		this.userService = userService;
+		this.passwordEncoder = passwordEncoder;
+	}
 
-    @GetMapping(value = {"/", "/login"})
-    public String login() {
-        return "login";
-    }
+	@GetMapping(value = { "/", "/login" })
+	public String login() {
+		return "login";
+	}
 
-    @GetMapping("/register")
-    public String registerForm() {
-        return "register";
-    }
+	@GetMapping("/register")
+	public String registerForm(Model model) {
+		model.addAttribute("user", new User());
+		return "register";
+	}
 
-    @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute User user,
-                             @RequestParam String confirmPassword,
-                             BindingResult result,
-                             RedirectAttributes redirectAttributes) {
-        if (userService.existsByEmail(user.getEmail())) {
-            result.rejectValue("email", "error.user", "Email already registered");
-            return "register";
-        }
+	@PostMapping("/register")
+	public String registerUser(@Valid @ModelAttribute User user, BindingResult result,
+			@RequestParam String confirmPassword, RedirectAttributes redirectAttributes) {
 
-        if (!user.getPassword().equals(confirmPassword)) {
-            result.rejectValue("password", "error.user", "Passwords do not match");
-            return "register";
-        }
+		if (result.hasErrors()) {
+			return "register";
+		}
 
-        user.setRole(UserRole.USER.getValue());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+		if (userService.existsByEmail(user.getEmail())) {
+			result.rejectValue("email", "error.user", "Email already registered");
+			return "register";
+		}
 
-        userService.save(user);
-        return "redirect:/login?registered";
-    }
+		if (!user.getPassword().equals(confirmPassword)) {
+			result.rejectValue("password", "error.user", "Passwords do not match");
+			return "register";
+		}
+
+		user.setRole(UserRole.USER.getValue());
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		userService.save(user);
+
+		return "redirect:/login?registered";
+	}
 }

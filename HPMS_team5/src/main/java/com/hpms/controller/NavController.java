@@ -24,11 +24,6 @@ public class NavController {
 	@Autowired
 	private IUserService userService;
 
-	@GetMapping("/dashboard")
-	public ModelAndView dashboard() {
-		return new ModelAndView("dashboard");
-	}
-
 	@GetMapping("/transaction")
 	public ModelAndView transactionPage() {
 		return new ModelAndView("transaction_record");
@@ -52,11 +47,6 @@ public class NavController {
 	    return "user_listing";
 	}
 
-	@GetMapping("/appointmentlisting")
-	public String appointmentListing(HttpServletRequest request) {
-		return "appointment_listing";
-	}
-
 	@GetMapping("/editaccount")
 	public String editAccountForm(Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -64,34 +54,29 @@ public class NavController {
 	    
 	    User user = userService.getUserByEmail(userEmail);
 	    model.addAttribute("loggedInUser", user);
-	    System.out.println("banana gender");
-	    System.out.println(user.getGender());
-		return "edit_account_form";
+		return "editaccount";
 	}
 
 	@PostMapping("/editaccount")
 	public ModelAndView updateAccount(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
 	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    String userEmail = auth.getName();
-	    
 	    User currentUser = userService.getUserByEmail(userEmail);
-	    ModelAndView mv = new ModelAndView("edit_account_form");
-	    mv.addObject("loggedInUser", user);
+
 	    if (!userEmail.equals(user.getEmail())) {
 	        User existingUser = userService.getUserByEmail(user.getEmail());
 	        if (existingUser != null) {
-	            mv.addObject("errorMessage", "Email already exists");
-	            return mv;
+	            redirectAttributes.addFlashAttribute("errorMessage", "Email already exists");
+	            return new ModelAndView("redirect:/editaccount");
 	        }
 	    }
-	    
+
 	    user.setId(currentUser.getId());
 	    user.setPassword(currentUser.getPassword());
 	    user.setRole(currentUser.getRole());
 	    userService.updateUser(user);
-	    
-	    mv.clear(); // Clear previous model attributes 
-	    mv.addObject("successMessage", "Account updated successfully");
-	    return mv;
+
+	    redirectAttributes.addFlashAttribute("successMessage", "Account updated successfully");
+	    return new ModelAndView("redirect:/editaccount");
 	}
 }

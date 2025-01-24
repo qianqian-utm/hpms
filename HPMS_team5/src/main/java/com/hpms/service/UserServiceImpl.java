@@ -84,14 +84,14 @@ public class UserServiceImpl implements IUserService {
 	@Transactional
 	public List<User> getPatients() {
 		try (Session session = sessionFactory.openSession()) {
-			return session.createQuery("FROM User WHERE role = 2").list();
+			return session.createQuery("FROM User WHERE role = 'USER'").list();
 		}
 	}
 
 	@Transactional
 	public List<User> getDoctors() {
 		try (Session session = sessionFactory.openSession()) {
-			return session.createQuery("FROM User WHERE role = 1").list();
+			return session.createQuery("FROM User WHERE role = 'ADMIN'").list();
 		}
 	}
 
@@ -105,9 +105,6 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 	    User user = getUserByEmail(email);
-	    System.out.println("Loading user by email: {}" +email);
-	    System.out.println("User found: {}");
-	    System.out.println(user != null ? user.getEmail() : "null");
 	    
 	    if (user == null) {
 	        throw new UsernameNotFoundException("User not found");
@@ -119,8 +116,6 @@ public class UserServiceImpl implements IUserService {
 	        .roles(user.getRole())
 	        .build();
 	        
-	    System.out.println("Created UserDetails: {}");
-	    System.out.println(userDetails);
 	    return userDetails;
 	}
 

@@ -20,15 +20,14 @@ public class MedicalRecordService {
 	}
 
 	@Transactional
-	public void addMedicalRecord(MedicalRecord medicalRecord) {
-		try (Session session = sessionFactory.openSession()) {
-			System.out.println("banana");
-			System.out.println(medicalRecord);
-			Transaction transaction = session.beginTransaction();
-			session.save(medicalRecord);
-			transaction.commit();
-			System.out.println("banan2a");
-		}
+	public MedicalRecord createMedicalRecord(MedicalRecord medicalRecord) {
+	    try (Session session = sessionFactory.openSession()) {
+	        Transaction transaction = session.beginTransaction();
+	        session.save(medicalRecord);
+	        transaction.commit();
+	        System.out.println("Medical Record ID after save: " + medicalRecord.getId());
+	        return medicalRecord;
+	    }
 	}
 
 	@Transactional
@@ -61,7 +60,7 @@ public class MedicalRecordService {
 	}
 
 	@Transactional
-	public MedicalRecord getMedicalRecordById(Long id) {
+	public MedicalRecord getMedicalRecordById(Integer id) {
 		try (Session session = sessionFactory.openSession()) {
 			return session.get(MedicalRecord.class, id);
 		}

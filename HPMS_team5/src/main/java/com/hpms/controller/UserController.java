@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +21,9 @@ import com.hpms.service.IUserService;
 public class UserController {
 	@Autowired
 	private IUserService userService;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
 	@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/add_user")
@@ -40,13 +44,23 @@ public class UserController {
 		mv.addObject("content", "edit_user_form");
 		mv.addObject("user", user);
 
+		String lastName = user.getLastName();
 		String phoneNumber = user.getPhoneNumber();
-		if (phoneNumber == null || phoneNumber.length() < 4) {
-			mv.addObject("errorMessage", "Invalid phone number");
-			return mv;
+
+		if (phoneNumber == null || phoneNumber.length() < 6) {
+		    mv.addObject("errorMessage", "Phone number must be at least 6 digits");
+		    return mv;
 		}
 
-		user.setPassword(phoneNumber.substring(phoneNumber.length() - 4));
+		if (lastName == null || lastName.isEmpty()) {
+		    mv.addObject("errorMessage", "Last name is required");
+		    return mv;
+		}
+
+		String lastSixDigits = phoneNumber.substring(Math.max(0, phoneNumber.length() - 6));
+		String rawPassword = lastName + lastSixDigits;
+
+		user.setPassword(passwordEncoder.encode(rawPassword));
 
 		User existingUser = userService.getUserByEmail(user.getEmail());
 		if (existingUser != null) {
@@ -90,13 +104,13 @@ public class UserController {
 		mv.addObject("user", user);
 
 		String phoneNumber = user.getPhoneNumber();
-		if (phoneNumber == null || phoneNumber.length() < 4) {
+		if (phoneNumber == null || phoneNumber.length() < 6) {
 			mv.addObject("errorMessage", "Invalid phone number");
 			return mv;
 		}
 
 		User existingUser = userService.getUserByEmail(user.getEmail());
-		if (existingUser != null) {
+		if (existingUser != null && existingUser.getId() != user.getId()) {
 		    mv.addObject("errorMessage", "Email already exists");
 		    return mv;
 		}

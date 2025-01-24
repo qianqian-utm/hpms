@@ -2,8 +2,7 @@ package com.hpms.enums;
 
 public enum UserRole {
     ADMIN("ADMIN"),
-    USER("USER"),
-    DOCTOR("DOCTOR");
+    USER("USER");
     
     private String value;
     

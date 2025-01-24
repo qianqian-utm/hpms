@@ -43,11 +43,12 @@
 					<tbody>
 						<c:forEach items="${users}" var="user">
 							<tr>
-								<td>${user.firstName}${user.lastName}</td>
+								<td>${user.firstName} ${user.lastName}</td>
 								<td>${user.gender == 1 ? 'Male' : (user.gender == 2 ? 'Female' : '-')}</td>
 								<td>${user.phoneNumber}</td>
 								<td>${user.email}</td>
-								<td>${user.role == 'ADMIN' ? 'Admin' : 'Patient'}</td>
+								<td>${user.role == 'ADMIN' ? 'Admin' : 'Patient'}
+								</td>
 								<td><c:if test="${user.id != currentUser.id}">
 										<a href="edit_user/${user.id}"
 											class="btn btn-outline-secondary"> <i

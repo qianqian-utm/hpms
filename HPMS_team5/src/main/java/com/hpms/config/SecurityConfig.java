@@ -30,11 +30,10 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	    http
-	        .csrf(csrf -> csrf
-	            .ignoringAntMatchers("/login", "/register","/HPMS/signout"))
 	        .authorizeHttpRequests(auth -> auth
 	            .antMatchers("/register", "/login", "/css/**", "/js/**").permitAll()
 	            .antMatchers("/userlisting/**", "/add_user/**", "/edit_user/**", "/delete_user/**").hasRole("ADMIN")
+	            .antMatchers("/appointments/**", "/editaccount").hasAnyRole("ADMIN", "USER")
 	            .anyRequest().authenticated())
 	        .formLogin(form -> form
 	            .loginPage("/login")
@@ -45,7 +44,8 @@ public class SecurityConfig {
 	            .permitAll())
 	        .logout(logout -> logout
 	            .logoutUrl("/HPMS/signout")
-	            .logoutSuccessUrl("/HPMS/login"));
+	            .logoutSuccessUrl("/HPMS/login"))
+	        .csrf();
 	    return http.build();
 	}
 
@@ -60,7 +60,7 @@ public class SecurityConfig {
 	        if (roles.contains("ROLE_ADMIN")) {
 	            response.sendRedirect(contextPath + "/userlisting");
 	        } else {
-	            response.sendRedirect(contextPath + "/dashboard");
+	            response.sendRedirect(contextPath + "/appointments");
 	        }
 	    };
 	}

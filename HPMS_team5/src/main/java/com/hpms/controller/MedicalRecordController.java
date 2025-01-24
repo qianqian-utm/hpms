@@ -1,103 +1,142 @@
 package com.hpms.controller;
 
+import com.hpms.model.Appointment;
 import com.hpms.model.MedicalRecord;
+import com.hpms.model.User;
+import com.hpms.service.AppointmentService;
 import com.hpms.service.IUserService;
 import com.hpms.service.MedicalRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Controller
-@RequestMapping("/medicalRecords")
+@RequestMapping("/medicalrecords")
 public class MedicalRecordController {
+	@Autowired
+	private AppointmentService appointmentService;
 
-    private static final String PATIENTS_ATTRIBUTE = "patients";
-    private static final String DOCTORS_ATTRIBUTE = "doctors";
-    private static final String MEDICAL_RECORD_ATTRIBUTE = "medicalRecord";
-    private static final String ADD_MEDICAL_RECORD_VIEW = "addMedicalRecord";
-    private static final String EDIT_MEDICAL_RECORD_VIEW = "editMedicalRecord";
-    private static final String REDIRECT_MEDICAL_RECORDS = "redirect:/medicalRecords";
+	@Autowired
+	private MedicalRecordService medicalRecordService;
 
-    private final MedicalRecordService medicalRecordService;
-    @Autowired
+	@Autowired
 	private IUserService userService;
 
-    @Autowired
-    public MedicalRecordController(MedicalRecordService medicalRecordService) {
-        this.medicalRecordService = medicalRecordService;
-    }
+	private User getCurrentUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		return userService.getUserByEmail(auth.getName());
+	}
 
-    @GetMapping
-    public String viewMedicalRecords(Model model) {
-        List<MedicalRecord> medicalRecords = medicalRecordService.getAllMedicalRecords();
-        model.addAttribute("medicalRecords", medicalRecords);
-        return "medicalrecords";
-    }
+	private boolean isAdmin() {
+		return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+				.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+	}
 
-    @GetMapping("/add")
-    public String addMedicalRecordForm(Model model) {
-        model.addAttribute(MEDICAL_RECORD_ATTRIBUTE, new MedicalRecord());
-        addUserAttributesToModel(model);
-        return ADD_MEDICAL_RECORD_VIEW;
-    }
+	@GetMapping("/add/{appointmentId}")
+	public String addMedicalRecordForm(@PathVariable Integer appointmentId, Model model) {
+		User currentUser = getCurrentUser();
+		Appointment appointment = appointmentService.getAppointmentById(appointmentId);
 
-    @PostMapping("/add")
-    public String addMedicalRecord(@Valid @ModelAttribute MedicalRecord medicalRecord,
-                                  BindingResult result,
-                                  Model model) {
-        if (result.hasErrors()) {
-            addUserAttributesToModel(model);
-            return ADD_MEDICAL_RECORD_VIEW;
-        }
-        
-        try {
-            medicalRecordService.addMedicalRecord(medicalRecord);
-        } catch (Exception e) {
-            e.printStackTrace();
-            addUserAttributesToModel(model);
-            return ADD_MEDICAL_RECORD_VIEW;
-        }
-        return REDIRECT_MEDICAL_RECORDS;
-    }
+		if (appointment == null) {
+			return "redirect:/appointments?error=Appointment not found";
+		}
 
-    @GetMapping("/edit/{id}")
-    public String editMedicalRecordForm(@PathVariable Long id, Model model) {
-        MedicalRecord medicalRecord = medicalRecordService.getMedicalRecordById(id);
-        if (medicalRecord == null) {
-            return "error";
-        }
-        model.addAttribute(MEDICAL_RECORD_ATTRIBUTE, medicalRecord);
-        addUserAttributesToModel(model);
-        return EDIT_MEDICAL_RECORD_VIEW;
-    }
+		if (!isAdmin() && currentUser.getId() != appointment.getDoctor().getId()) {
+			return "redirect:/appointments?error=Unauthorized access";
+		}
 
-    @PostMapping("/edit/{id}")
-    public String editMedicalRecord(@PathVariable int id,
-                                  @Valid @ModelAttribute MedicalRecord medicalRecord,
-                                  BindingResult result,
-                                  Model model) {
-        if (result.hasErrors()) {
-            addUserAttributesToModel(model);
-            return EDIT_MEDICAL_RECORD_VIEW;
-        }
-        medicalRecord.setId(id);
-        medicalRecordService.updateMedicalRecord(medicalRecord);
-        return REDIRECT_MEDICAL_RECORDS;
-    }
+		model.addAttribute("appointment", appointment);
+		return "medicalRecordForm";
+	}
 
-    @PostMapping("/delete/{id}")
-    public String deleteMedicalRecord(@PathVariable Long id) {
-        medicalRecordService.deleteMedicalRecord(id);
-        return REDIRECT_MEDICAL_RECORDS;
-    }
+	@PostMapping("/add")
+	public String addMedicalRecord(@ModelAttribute MedicalRecord medicalRecord, HttpServletRequest request,
+			Model model) {
+		try {
+			User currentUser = getCurrentUser();
+			Appointment appointment = appointmentService
+					.getAppointmentById(Integer.parseInt(request.getParameter("appointment.id")));
 
-    private void addUserAttributesToModel(Model model) {
-        model.addAttribute(PATIENTS_ATTRIBUTE, userService.getPatients());
-        model.addAttribute(DOCTORS_ATTRIBUTE, userService.getDoctors());
-    }
+			if (!isAdmin() && currentUser.getId() != appointment.getDoctor().getId()) {
+				return "redirect:/appointments?error=Unauthorized access";
+			}
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date recordDate = dateFormat.parse(request.getParameter("date"));
+			medicalRecord.setDate(recordDate);
+
+			MedicalRecord savedRecord = medicalRecordService.createMedicalRecord(medicalRecord);
+
+			appointment.setMedicalRecord(savedRecord);
+			appointmentService.updateAppointment(appointment);
+
+			return "redirect:/appointments/view/" + appointment.getId();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("error", e.getMessage());
+			return "medicalRecordForm";
+		}
+	}
+
+	@GetMapping("/edit/{id}")
+	public String editMedicalRecordForm(@PathVariable Integer id, Model model) {
+		User currentUser = getCurrentUser();
+		MedicalRecord medicalRecord = medicalRecordService.getMedicalRecordById(id);
+
+		if (medicalRecord == null) {
+			return "redirect:/appointments?error=Medical record not found";
+		}
+
+		Appointment appointment = medicalRecord.getAppointment();
+
+		if (!isAdmin() && currentUser.getId() != appointment.getDoctor().getId()) {
+			return "redirect:/appointments?error=Unauthorized access";
+		}
+
+		model.addAttribute("medicalRecord", medicalRecord);
+		model.addAttribute("appointment", appointment);
+		return "medicalRecordForm";
+	}
+
+	@PostMapping("/edit/{id}")
+	public String editMedicalRecord(@PathVariable Integer id, @ModelAttribute MedicalRecord medicalRecord,
+			HttpServletRequest request, Model model) {
+		try {
+			User currentUser = getCurrentUser();
+			MedicalRecord existingRecord = medicalRecordService.getMedicalRecordById(id);
+			Appointment appointment = existingRecord.getAppointment();
+
+			if (!isAdmin() && currentUser.getId() != appointment.getDoctor().getId()) {
+				return "redirect:/appointments?error=Unauthorized access";
+			}
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date recordDate = dateFormat.parse(request.getParameter("date"));
+
+			medicalRecord.setId(id);
+			medicalRecord.setDate(recordDate);
+			medicalRecord.setAppointment(appointment);
+			appointment.setMedicalRecord(medicalRecord);
+
+			medicalRecordService.updateMedicalRecord(medicalRecord);
+			appointmentService.updateAppointment(appointment);
+
+			return "redirect:/appointments/view/" + appointment.getId();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("error", e.getMessage());
+			return "medicalRecordForm";
+		}
+	}
 }
