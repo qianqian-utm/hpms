@@ -37,46 +37,47 @@ public class NavController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/userlisting")
 	public String userListing(@ModelAttribute("successMessage") String successMessage, Model model) {
-	    List<User> users = userService.getUserList();
-	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    User currentUser = userService.getUserByEmail(auth.getName());
-	    
-	    model.addAttribute("users", users);
-	    model.addAttribute("currentUser", currentUser);
-	    model.addAttribute("successMessage", successMessage);
-	    return "user_listing";
+		List<User> users = userService.getUserList();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		User currentUser = userService.getUserByEmail(auth.getName());
+
+		model.addAttribute("users", users);
+		model.addAttribute("currentUser", currentUser);
+		model.addAttribute("successMessage", successMessage);
+		return "user_listing";
 	}
 
 	@GetMapping("/editaccount")
 	public String editAccountForm(Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    String userEmail = auth.getName(); // Gets the email
-	    
-	    User user = userService.getUserByEmail(userEmail);
-	    model.addAttribute("loggedInUser", user);
+		String userEmail = auth.getName(); // Gets the email
+
+		User user = userService.getUserByEmail(userEmail);
+		model.addAttribute("loggedInUser", user);
 		return "editaccount";
 	}
 
 	@PostMapping("/editaccount")
 	public ModelAndView updateAccount(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) {
-	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    String userEmail = auth.getName();
-	    User currentUser = userService.getUserByEmail(userEmail);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userEmail = auth.getName();
+		User currentUser = userService.getUserByEmail(userEmail);
 
-	    if (!userEmail.equals(user.getEmail())) {
-	        User existingUser = userService.getUserByEmail(user.getEmail());
-	        if (existingUser != null) {
-	            redirectAttributes.addFlashAttribute("errorMessage", "Email already exists");
-	            return new ModelAndView("redirect:/editaccount");
-	        }
-	    }
+		if (!userEmail.equals(user.getEmail())) {
+			User existingUser = userService.getUserByEmail(user.getEmail());
+			if (existingUser != null) {
+				redirectAttributes.addFlashAttribute("errorMessage", "Email already exists");
+				return new ModelAndView("redirect:/editaccount");
+			}
+		}
 
-	    user.setId(currentUser.getId());
-	    user.setPassword(currentUser.getPassword());
-	    user.setRole(currentUser.getRole());
-	    userService.updateUser(user);
+		user.setId(currentUser.getId());
+		user.setPassword(currentUser.getPassword());
+		user.setRole(currentUser.getRole());
+		userService.updateUser(user);
 
-	    redirectAttributes.addFlashAttribute("successMessage", "Account updated successfully");
-	    return new ModelAndView("redirect:/editaccount");
+		redirectAttributes.addFlashAttribute("successMessage", "Account updated successfully");
+		return new ModelAndView("redirect:/editaccount");
 	}
+
 }

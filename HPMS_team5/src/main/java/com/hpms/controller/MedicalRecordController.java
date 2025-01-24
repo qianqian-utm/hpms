@@ -79,7 +79,7 @@ public class MedicalRecordController {
 			appointment.setMedicalRecord(savedRecord);
 			appointmentService.updateAppointment(appointment);
 
-			return "redirect:/appointments/view/" + appointment.getId();
+			return "redirect:/appointments/view/" + appointment.getId() + "?success=Medical record added successfully";
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -131,12 +131,27 @@ public class MedicalRecordController {
 			medicalRecordService.updateMedicalRecord(medicalRecord);
 			appointmentService.updateAppointment(appointment);
 
-			return "redirect:/appointments/view/" + appointment.getId();
+			return "redirect:/appointments/view/" + appointment.getId() + "?success=Medical record updated successfully";
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("error", e.getMessage());
 			return "medicalRecordForm";
 		}
+	}
+
+	@GetMapping("/delete/{id}")
+	public String deleteMedicalRecord(@PathVariable Integer id) {
+	    if (!isAdmin()) {
+	        return "redirect:/appointments?error=unauthorized";
+	    }
+
+	    Appointment appointment = appointmentService.findByMedicalRecordId(id);
+	    if (appointment == null) {
+	        return "redirect:/appointments?error=notfound";
+	    }
+
+	    medicalRecordService.deleteMedicalRecord(id);
+	    return "redirect:/appointments/view/" + appointment.getId() + "?success=Medical record deleted successfully";
 	}
 }

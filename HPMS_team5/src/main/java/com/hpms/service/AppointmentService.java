@@ -96,6 +96,7 @@ public class AppointmentService {
 				existingAppointment.setAppointmentType(updatedAppointment.getAppointmentType());
 				existingAppointment.setRemarks(updatedAppointment.getRemarks());
 				existingAppointment.setMedicalRecord(updatedAppointment.getMedicalRecord());
+				existingAppointment.setTransactionRecord(updatedAppointment.getTransactionRecord());
 				session.update(existingAppointment);
 			}
 			transaction.commit();
@@ -140,6 +141,24 @@ public class AppointmentService {
 			return session.createQuery(
 					"FROM Appointment WHERE patient.id = :patientId ORDER BY appointmentDate DESC, startTime DESC")
 					.setParameter("patientId", patientId).list();
+		}
+	}
+
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public Appointment findByMedicalRecordId(Integer medicalRecordId) {
+		try (Session session = sessionFactory.openSession()) {
+			return (Appointment) session.createQuery("FROM Appointment WHERE medicalRecord.id = :medicalRecordId")
+					.setParameter("medicalRecordId", medicalRecordId).uniqueResult();
+		}
+	}
+
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public Appointment findByTransactionRecordId(Integer transactionRecordId) {
+		try (Session session = sessionFactory.openSession()) {
+			return (Appointment) session.createQuery("FROM Appointment WHERE transactionRecord.id = :transactionRecordId")
+					.setParameter("transactionRecordId", transactionRecordId).uniqueResult();
 		}
 	}
 }

@@ -53,12 +53,12 @@ public class Appointment {
 
 	private String remarks;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
 	@JoinColumn(name = "medical_record_id")
 	private MedicalRecord medicalRecord;
 
-	@OneToOne
-	@JoinColumn(name = "transaction_id")
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+	@JoinColumn(name = "transaction_record_id")
 	private TransactionRecord transactionRecord;
 
 	// Constructors

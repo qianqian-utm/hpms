@@ -1,5 +1,6 @@
 package com.hpms.service;
 
+import com.hpms.model.Appointment;
 import com.hpms.model.MedicalRecord;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,21 +14,22 @@ import java.util.List;
 @Service
 public class MedicalRecordService {
 	private final SessionFactory sessionFactory;
+	private final AppointmentService appointmentService;
 
 	@Autowired
-	public MedicalRecordService(SessionFactory sessionFactory) {
+	public MedicalRecordService(SessionFactory sessionFactory, AppointmentService appointmentService) {
 		this.sessionFactory = sessionFactory;
+		this.appointmentService = appointmentService;
 	}
 
 	@Transactional
 	public MedicalRecord createMedicalRecord(MedicalRecord medicalRecord) {
-	    try (Session session = sessionFactory.openSession()) {
-	        Transaction transaction = session.beginTransaction();
-	        session.save(medicalRecord);
-	        transaction.commit();
-	        System.out.println("Medical Record ID after save: " + medicalRecord.getId());
-	        return medicalRecord;
-	    }
+		try (Session session = sessionFactory.openSession()) {
+			Transaction transaction = session.beginTransaction();
+			session.save(medicalRecord);
+			transaction.commit();
+			return medicalRecord;
+		}
 	}
 
 	@Transactional
@@ -40,14 +42,22 @@ public class MedicalRecordService {
 	}
 
 	@Transactional
-	public void deleteMedicalRecord(Long id) {
+	public void deleteMedicalRecord(Integer id) {
 		try (Session session = sessionFactory.openSession()) {
-			Transaction transaction = session.beginTransaction();
-			MedicalRecord medicalRecord = session.get(MedicalRecord.class, id);
-			if (medicalRecord != null) {
+			Transaction tx = session.beginTransaction();
+			try {
+				Appointment appointment = appointmentService.findByMedicalRecordId(id);
+				appointment.setMedicalRecord(null);
+				session.update(appointment);
+
+				MedicalRecord medicalRecord = session.get(MedicalRecord.class, id);
 				session.delete(medicalRecord);
+
+				tx.commit();
+			} catch (Exception e) {
+				tx.rollback();
+				throw e;
 			}
-			transaction.commit();
 		}
 	}
 

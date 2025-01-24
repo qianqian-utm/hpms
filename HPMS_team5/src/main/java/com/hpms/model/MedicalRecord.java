@@ -14,9 +14,8 @@ public class MedicalRecord {
 	@Column(name = "id")
 	private Integer id;
 
-	@OneToOne
-	@JoinColumn(name = "appointment_id")
-	private Appointment appointment;
+	@OneToOne(mappedBy = "medicalRecord")
+    private Appointment appointment;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Temporal(TemporalType.DATE)
