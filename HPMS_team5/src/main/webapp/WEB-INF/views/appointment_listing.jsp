@@ -46,6 +46,7 @@
 								<th>Status</th>
 								<th>Type</th>
 								<th>Remarks</th>
+								<th>Payment status</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
@@ -70,6 +71,12 @@
 											<c:when test="${appointment.appointmentType == 2}">Review</c:when>
 										</c:choose></td>
 									<td>${appointment.remarks}</td>
+									<td><c:choose>
+											<c:when test="${appointment.transactionRecord == null}">-</c:when>
+											<c:when test="${appointment.transactionRecord != null}">
+												${appointment.transactionRecord.transactionStatus}
+											</c:when>
+										</c:choose></td>
 									<td><sec:authorize access="hasRole('ADMIN')">
 											<a
 												href="<c:url value='/appointments/view/${appointment.id}'/>"

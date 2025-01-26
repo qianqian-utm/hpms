@@ -126,7 +126,7 @@ public class UserController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@PostMapping("/delete_user/{id}")
+	@GetMapping("/delete_user/{id}")
 	public String deleteUser(@PathVariable int id, HttpSession session, 
 			RedirectAttributes redirectAttributes) {
 		try {

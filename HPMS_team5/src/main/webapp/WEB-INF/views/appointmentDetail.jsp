@@ -109,7 +109,7 @@
 
 											<dt class="col-sm-4">Amount:</dt>
 											<dd class="col-sm-8">MYR ${transactionRecord.amount != null ? transactionRecord.amount : '0'}</dd>
-											
+
 											<dt class="col-sm-4">Status:</dt>
 											<dd class="col-sm-8">${not empty transactionRecord.transactionStatus ? transactionRecord.transactionStatus : '-'}</dd>
 
@@ -124,51 +124,52 @@
 							</div>
 						</div>
 					</div>
-
-					<div class="col-md-6">
-						<div class="card">
-							<div
-								class="card-header d-flex justify-content-between align-items-center">
-								<h5 class="card-title mb-0">Medical Record</h5>
-								<c:if
-									test="${isAdminUser && appointment.appointmentStatus != 3}">
+					<c:if test="${isAdminUser}">
+						<div class="col-md-6">
+							<div class="card">
+								<div
+									class="card-header d-flex justify-content-between align-items-center">
+									<h5 class="card-title mb-0">Medical Record</h5>
+									<c:if
+										test="${isAdminUser && appointment.appointmentStatus != 3}">
+										<c:choose>
+											<c:when test="${medicalRecord == null}">
+												<a
+													href="<c:url value='/medicalrecords/add/${appointment.id}'/>"
+													class="btn btn-primary btn-sm">Add Medical Record </a>
+											</c:when>
+											<c:otherwise>
+												<span> <a
+													href="<c:url value='/medicalrecords/edit/${appointment.medicalRecord.id}'/>"
+													class="btn btn-primary btn-sm">Edit</a> <a
+													href="<c:url value='/medicalrecords/delete/${appointment.medicalRecord.id}'/>"
+													class="btn btn-danger btn-sm"
+													onclick="return confirm('Are you sure you want to delete this medical record?')"><i
+														class="bi bi-trash-fill"></i></a>
+												</span>
+											</c:otherwise>
+										</c:choose>
+									</c:if>
+								</div>
+								<div class="card-body">
 									<c:choose>
-										<c:when test="${medicalRecord == null}">
-											<a
-												href="<c:url value='/medicalrecords/add/${appointment.id}'/>"
-												class="btn btn-primary btn-sm">Add Medical Record </a>
+										<c:when test="${medicalRecord != null}">
+											<dl class="row">
+												<dt class="col-sm-4">Date:</dt>
+												<dd class="col-sm-8">${medicalRecord.date}</dd>
+
+												<dt class="col-sm-4">Description:</dt>
+												<dd class="col-sm-8">${medicalRecord.description}</dd>
+											</dl>
 										</c:when>
 										<c:otherwise>
-											<span> <a
-												href="<c:url value='/medicalrecords/edit/${appointment.medicalRecord.id}'/>"
-												class="btn btn-primary btn-sm">Edit</a> <a
-												href="<c:url value='/medicalrecords/delete/${appointment.medicalRecord.id}'/>"
-												class="btn btn-danger btn-sm"
-												onclick="return confirm('Are you sure you want to delete this medical record?')"><i
-													class="bi bi-trash-fill"></i></a>
-											</span>
+											<p class="text-muted">No medical record available.</p>
 										</c:otherwise>
 									</c:choose>
-								</c:if>
-							</div>
-							<div class="card-body">
-								<c:choose>
-									<c:when test="${medicalRecord != null}">
-										<dl class="row">
-											<dt class="col-sm-4">Date:</dt>
-											<dd class="col-sm-8">${medicalRecord.date}</dd>
-
-											<dt class="col-sm-4">Description:</dt>
-											<dd class="col-sm-8">${medicalRecord.description}</dd>
-										</dl>
-									</c:when>
-									<c:otherwise>
-										<p class="text-muted">No medical record available.</p>
-									</c:otherwise>
-								</c:choose>
+								</div>
 							</div>
 						</div>
-					</div>
+					</c:if>
 				</div>
 			</main>
 		</div>
