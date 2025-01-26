@@ -15,8 +15,7 @@ Note that the current URL in HibernateConfig.java is set to //localhost:3307, do
 
 # Layout
 layout.jsp is used for the main layout throughout the site
-
-You may refer to the implementation in UserController - addUserForm function.
+May refer to layout.jsp to copy over the layout to your view pages
 
 # Navbar
 To make the nav items be active based on the page, add in an attribute called `currentPage`
