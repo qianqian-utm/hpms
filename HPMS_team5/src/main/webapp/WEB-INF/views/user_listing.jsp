@@ -47,22 +47,16 @@
 								<td>${user.gender == 1 ? 'Male' : (user.gender == 2 ? 'Female' : '-')}</td>
 								<td>${user.phoneNumber}</td>
 								<td>${user.email}</td>
-								<td>${user.role == 'ADMIN' ? 'Admin' : 'Patient'}
-								</td>
+								<td>${user.role == 'ADMIN' ? 'Admin' : 'Patient'}</td>
 								<td><c:if test="${user.id != currentUser.id}">
 										<a href="edit_user/${user.id}"
 											class="btn btn-outline-secondary"> <i
 											class="bi bi-pencil-fill"></i>
 										</a>
-										<form action="delete_user/${user.id}" method="post"
-											style="display: inline;">
-											<input type="hidden" name="${_csrf.parameterName}"
-												value="${_csrf.token}" />
-											<button type="submit" class="btn btn-outline-danger"
-												onclick="return confirm('Are you sure you want to delete this user?')">
-												<i class="bi bi-trash-fill"></i>
-											</button>
-										</form>
+										<a href="<c:url value='delete_user/${user.id}'/>"
+											class="btn btn-danger btn-sm"
+											onclick="return confirm('Are you sure you want to delete this user?')"><i
+											class="bi bi-trash-fill"></i></a>
 									</c:if></td>
 							</tr>
 						</c:forEach>
